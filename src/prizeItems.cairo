@@ -1,39 +1,43 @@
 use starknet::{ContractAddress, get_caller_address};
 
+const MINTER_ROLE: felt252 = 'MINTER_ROLE';
+
 #[starknet::interface]
 trait IPrizeItems<TContractState> {
     fn mint(ref self: TContractState, to: ContractAddress, token_id: u256, value: u256);
     fn mint_batch(ref self: TContractState, to: ContractAddress, token_ids: Span<u256>, values: Span<u256>);
-    fn set_minter(ref self: TContractState, minter: ContractAddress);
     fn get_token_uri(self: @TContractState, token_id: u256) -> ByteArray;
 }
 
 #[starknet::contract]
 mod PrizeItems {
-    use openzeppelin::token::erc1155::interface::ERC1155ABI;
-use core::traits::TryInto;
-use starknet::{ContractAddress, get_caller_address};
+    use core::array::ArrayTrait;
+use openzeppelin::token::erc1155::interface::ERC1155ABI;
+    use core::traits::TryInto;
+    use starknet::{ContractAddress, get_caller_address};
     use starknet::class_hash::ClassHash;
+    use super::MINTER_ROLE;
 
     use zeroable::Zeroable;
 
     use openzeppelin::token::erc1155::{ERC1155Component, ERC1155HooksEmptyImpl};
-    use openzeppelin::access::ownable::OwnableComponent;
+    use openzeppelin::access::accesscontrol::AccessControlComponent;
+    use openzeppelin::access::accesscontrol::DEFAULT_ADMIN_ROLE;
     use openzeppelin::introspection::src5::SRC5Component;
 
     use super::IPrizeItems;
 
 
-    component!(path: OwnableComponent, storage: ownable, event: OwnableEvent);
+    component!(path: AccessControlComponent, storage: access_control, event: AccessControlEvent);
     component!(path: ERC1155Component, storage: erc1155, event: ERC1155Event);
     component!(path: SRC5Component, storage: src5, event: SRC5Event);
 
     #[abi(embed_v0)]
-    impl OwnableImpl = OwnableComponent::OwnableTwoStepImpl<ContractState>;
-    impl OwnableInternalImpl = OwnableComponent::InternalImpl<ContractState>;
+    impl AccessControlImpl = AccessControlComponent::AccessControlImpl<ContractState>;
+    impl AccessControlInternalImpl = AccessControlComponent::InternalImpl<ContractState>;
 
     #[abi(embed_v0)]
-    impl ERC1155MixinImpl = ERC1155Component::ERC1155MixinImpl<ContractState>;
+    impl ERC1155MixinImpl = ERC1155Component::ERC1155Impl<ContractState>;
     impl ERC1155InternalImpl = ERC1155Component::InternalImpl<ContractState>;
 
 
@@ -44,8 +48,7 @@ use starknet::{ContractAddress, get_caller_address};
     #[storage]
     struct Storage {
         #[substorage(v0)]
-        ownable: OwnableComponent::Storage,
-        _minter: ContractAddress,
+        access_control: AccessControlComponent::Storage,
         #[substorage(v0)]
         erc1155: ERC1155Component::Storage,
         #[substorage(v0)]
@@ -56,7 +59,7 @@ use starknet::{ContractAddress, get_caller_address};
     #[derive(Drop, starknet::Event)]
     enum Event {
         #[flat]
-        OwnableEvent: OwnableComponent::Event,
+        AccessControlEvent: AccessControlComponent::Event,
         #[flat]
         ERC1155Event: ERC1155Component::Event,
         #[flat]
@@ -64,7 +67,7 @@ use starknet::{ContractAddress, get_caller_address};
     }
 
     //
-    // IMintableToken (StarkGate)
+    // IPrizeItems
     //
     #[abi(embed_v0)]
     impl PrizeItemsImpl of IPrizeItems<ContractState> {
@@ -74,7 +77,7 @@ use starknet::{ContractAddress, get_caller_address};
             token_id: u256,
             value: u256,
         ) {
-            only_minter(@self);
+            self.access_control.assert_only_role(MINTER_ROLE);
             //self.erc1155.mint_with_acceptance_check(zeroable::Zeroable::zero(), token_id, value, array![].span());
             let token_ids = array![token_id].span();
             let values = array![value].span();
@@ -86,18 +89,10 @@ use starknet::{ContractAddress, get_caller_address};
             token_ids: Span<u256>,
             values: Span<u256>,
         ) {
-            only_minter(@self); 
+            self.access_control.assert_only_role(MINTER_ROLE);
             self.erc1155.batch_mint_with_acceptance_check(to, token_ids, values, array![].span());
         }
-        fn set_minter(
-            ref self: ContractState,   
-            minter: ContractAddress,
-        ) {
-            let owner = self.ownable.owner();
-            assert(!minter.is_zero(), 'minter is 0');
-            assert(get_caller_address() == owner, 'only owner');
-            self._minter.write(minter);
-        }
+        
         fn get_token_uri(
             self: @ContractState,   
             token_id: u256,
@@ -118,21 +113,12 @@ use starknet::{ContractAddress, get_caller_address};
     ) {
         assert(!owner.is_zero(), 'owner is 0');
         self.erc1155.initializer(base_uri);
-        self.ownable.initializer(owner);
-        self._minter.write(minter);
+        self.access_control.initializer();
+        self.access_control._grant_role(DEFAULT_ADMIN_ROLE, owner);
+        self.access_control._grant_role(MINTER_ROLE, minter);
         self.erc1155.supports_interface(OLD_IERC1155_ID);
         //self.erc1155.mint_with_acceptance_check(zeroable::Zeroable::zero() , 0, 1, array![1].span());
     }
     
 
-    // TODO #[view]
-    fn minter(self: @ContractState) -> ContractAddress {
-        self._minter.read()
-    }
-
-    fn only_minter(self: @ContractState) {
-        let caller = starknet::get_caller_address();
-        let minter = self._minter.read();
-        assert(caller == minter, 'only minter');
-    }
 }
