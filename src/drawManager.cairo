@@ -1,6 +1,6 @@
 use starknet::{ContractAddress, get_caller_address};
-const MANAGER_ROLE: felt252 = 'MANAGER_ROLE';
-const FULLFILL_ROLE: felt252 = 'FULLFILL_ROLE';
+const ADMIN_ROLE: felt252 = 'ADMIN_ROLE';
+const FULFILL_ROLE: felt252 = 'FULFILL_ROLE';
 const U32MAX: u32 = 4294967295;
 
 #[starknet::interface]
@@ -68,7 +68,7 @@ pub struct RequestCompleted {
 
 #[starknet::contract]
 mod DrawManager {
-    use super::{MANAGER_ROLE, RequestInfo, IDrawManager, Errors, PoolInfo, FULLFILL_ROLE, RequestCompleted, U32MAX};
+    use super::{ADMIN_ROLE, RequestInfo, IDrawManager, Errors, PoolInfo, FULFILL_ROLE, RequestCompleted, U32MAX};
     use starknet::ContractAddress;
     use starknet::get_caller_address;
     use openzeppelin::access::accesscontrol::AccessControlComponent;
@@ -143,7 +143,7 @@ mod DrawManager {
         assert(!owner.is_zero(), 'owner is 0');
         self.access_control.initializer();
         self.access_control._grant_role(DEFAULT_ADMIN_ROLE, owner);
-        self.access_control._grant_role(MANAGER_ROLE, owner);
+        self.access_control._grant_role(ADMIN_ROLE, owner);
         self.nft_contract.write(nft_contract);
     }
 
@@ -153,10 +153,10 @@ mod DrawManager {
         fn set_vrf_contract(ref self: ContractState, _vrf_contract: ContractAddress) {
             self.access_control.assert_only_role(DEFAULT_ADMIN_ROLE);
             self.vrf_contract.write(_vrf_contract);
-            self.access_control.grant_role(FULLFILL_ROLE, _vrf_contract);
+            self.access_control.grant_role(FULFILL_ROLE, _vrf_contract);
         }
         fn set_token_pool(ref self: ContractState, _ids: Span<u256>) {
-            self.access_control.assert_only_role(MANAGER_ROLE);
+            self.access_control.assert_only_role(ADMIN_ROLE);
             self.ids_length.write(_ids.len());
             let mut i = 0;
             loop{
@@ -169,7 +169,7 @@ mod DrawManager {
             }
         }
         fn set_unit_pool(ref self: ContractState, _unit_id: u32, _token_ids: Span<u32>, _probs: Span<u32>) {
-            self.access_control.assert_only_role(MANAGER_ROLE);
+            self.access_control.assert_only_role(ADMIN_ROLE);
             let mut unit = self.unit_pools_info.read(_unit_id);
             assert(_token_ids.len() == _probs.len(), Errors::LENGTH_NOT_MATCH);
             assert(!unit.enable, Errors::UNIT_POOL_EXISTED);
@@ -193,7 +193,7 @@ mod DrawManager {
             self.existed_unit_length.write(self.existed_unit_length.read() + 1);
         }
         fn set_drawing_pool(ref self: ContractState, _pool_id: u32, _unit_ids: Span<u32>, _probs: Span<u32>) {
-            self.access_control.assert_only_role(MANAGER_ROLE);
+            self.access_control.assert_only_role(ADMIN_ROLE);
             assert(_unit_ids.len() == _probs.len(), Errors::LENGTH_NOT_MATCH);
             let mut pool = self.drawing_pools_info.read(_pool_id);
             assert(!pool.enable, Errors::DRAWING_POOL_EXISTED);
@@ -252,7 +252,7 @@ mod DrawManager {
             
         }
         fn fulfill_random_words(ref self: ContractState, _request_id: u256, _random_words: felt252) {
-            //test self.access_control.assert_only_role(FULLFILL_ROLE);
+            //test self.access_control.assert_only_role(FULFILL_ROLE);
             let mut request = self.requests_info.read(_request_id);
             assert(request.exists, Errors::REQUEST_NOT_EXIST);
             assert(!request.fulfilled, Errors::REQUEST_ALREADY_FULFILLED);
