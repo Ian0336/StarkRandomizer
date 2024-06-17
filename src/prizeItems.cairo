@@ -7,6 +7,7 @@ trait IPrizeItems<TContractState> {
     fn mint(ref self: TContractState, to: ContractAddress, token_id: u256, value: u256);
     fn mint_batch(ref self: TContractState, to: ContractAddress, token_ids: Span<u256>, values: Span<u256>);
     fn get_token_uri(self: @TContractState, token_id: u256) -> ByteArray;
+    fn set_minter_role(ref self: TContractState, minter: ContractAddress);
 }
 
 #[starknet::contract]
@@ -100,6 +101,13 @@ use openzeppelin::token::erc1155::interface::ERC1155ABI;
             let base: ByteArray = self.erc1155.uri(token_id);
             let token_uri: ByteArray = format!("{}{}", base, token_id);
             token_uri
+        }
+        fn set_minter_role(
+            ref self: ContractState,   
+            minter: ContractAddress,
+        ) {
+            self.access_control.assert_only_role(DEFAULT_ADMIN_ROLE);
+            self.access_control._grant_role(MINTER_ROLE, minter);
         }
     }
 

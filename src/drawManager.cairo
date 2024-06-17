@@ -1,7 +1,7 @@
 use starknet::{ContractAddress, get_caller_address};
 const MANAGER_ROLE: felt252 = 'MANAGER_ROLE';
 const FULLFILL_ROLE: felt252 = 'FULLFILL_ROLE';
-const MAX_AMOUNTS: u32 = 4294967295;
+const U32MAX: u32 = 4294967295;
 
 #[starknet::interface]
 trait IDrawManager<TContractState> {
@@ -9,7 +9,7 @@ trait IDrawManager<TContractState> {
     fn set_token_pool(ref self: TContractState, _ids: Span<u256>);
     fn set_unit_pool(ref self: TContractState, _unit_id: u32, _token_ids: Span<u32>, _probs: Span<u32>);
     fn set_drawing_pool(ref self: TContractState, _pool_id: u32, _unit_ids: Span<u32>, _probs: Span<u32>);
-    fn send_request(ref self: TContractState, _user: ContractAddress, _pools_id: Span<u32>, _draw_amounts: Span<u32>);
+    fn send_request(ref self: TContractState, _pools_id: Span<u32>, _draw_amounts: Span<u32>);
     fn fulfill_random_words(ref self: TContractState, _request_id: u256, _random_words: felt252);
     // view functions
     fn get_vrf_contract(self: @TContractState) -> ContractAddress;
@@ -68,7 +68,7 @@ pub struct RequestCompleted {
 
 #[starknet::contract]
 mod DrawManager {
-    use super::{MANAGER_ROLE, RequestInfo, IDrawManager, Errors, PoolInfo, FULLFILL_ROLE, RequestCompleted, MAX_AMOUNTS};
+    use super::{MANAGER_ROLE, RequestInfo, IDrawManager, Errors, PoolInfo, FULLFILL_ROLE, RequestCompleted, U32MAX};
     use starknet::ContractAddress;
     use starknet::get_caller_address;
     use openzeppelin::access::accesscontrol::AccessControlComponent;
@@ -134,6 +134,19 @@ mod DrawManager {
        
         RequestCompleted: RequestCompleted,
     }
+    #[constructor]
+    fn constructor(
+        ref self: ContractState, 
+        owner: ContractAddress,
+        nft_contract: ContractAddress
+    ) {
+        assert(!owner.is_zero(), 'owner is 0');
+        self.access_control.initializer();
+        self.access_control._grant_role(DEFAULT_ADMIN_ROLE, owner);
+        self.access_control._grant_role(MANAGER_ROLE, owner);
+        self.nft_contract.write(nft_contract);
+    }
+
 
     #[abi(embed_v0)]
     impl DrawManagerImpl of IDrawManager<ContractState> {
@@ -151,7 +164,7 @@ mod DrawManager {
                     break;
                 }
                 self.ids.write(i, *_ids.at(i));
-                self.remainings.write(i, MAX_AMOUNTS);
+                self.remainings.write(i, U32MAX);
                 i += 1;
             }
         }
@@ -212,9 +225,11 @@ mod DrawManager {
             self.existed_drawing.write(_pool_id, true);
             self.existed_drawing_length.write(self.existed_drawing_length.read() + 1);
         }
-        fn send_request(ref self: ContractState, _user: ContractAddress, _pools_id: Span<u32>, _draw_amounts: Span<u32>) {
+        fn send_request(ref self: ContractState, _pools_id: Span<u32>, _draw_amounts: Span<u32>) {
+            let _user = get_caller_address();
             assert(_pools_id.len() == _draw_amounts.len(), Errors::LENGTH_NOT_MATCH);
-            let request_id: u256 = 0;
+            //test let request_id: u256 = vrf
+            let request_id: u256 = self.requests_queue_num.read();
             let mut request = self.requests_info.read(request_id);
             request.exists = true;
             request.request_sender = _user;
@@ -237,7 +252,7 @@ mod DrawManager {
             
         }
         fn fulfill_random_words(ref self: ContractState, _request_id: u256, _random_words: felt252) {
-            self.access_control.assert_only_role(FULLFILL_ROLE);
+            //test self.access_control.assert_only_role(FULLFILL_ROLE);
             let mut request = self.requests_info.read(_request_id);
             assert(request.exists, Errors::REQUEST_NOT_EXIST);
             assert(!request.fulfilled, Errors::REQUEST_ALREADY_FULFILLED);
@@ -421,8 +436,11 @@ mod DrawManager {
 
     fn split_random_word(random_word: felt252) -> (felt252, u32) {
         let consumed_random_word: felt252 = PoseidonTrait::new().update_with(random_word).finalize();
-        let random_word_32: u32 = random_word.try_into().unwrap();
-        (consumed_random_word, random_word_32)
+            let tmp256: u256 = random_word.into();
+            let tmpMAX: u256 = U32MAX.into();
+            let tmp = tmp256 % tmpMAX+1;
+            let random_word_32: u32 = tmp.try_into().unwrap();
+            (consumed_random_word, random_word_32)
     }
     fn get_unit_id(ref self: ContractState, pool_id: u32, random_word: u32) -> u32 {
         let pool = self.drawing_pools_info.read(pool_id);
