@@ -1,2 +1,2 @@
 pub mod prizeItems;
-//pub mod drawManager;
+pub mod drawManager;
