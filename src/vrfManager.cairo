@@ -151,7 +151,7 @@ mod ExampleRandomness {
             };
             let caller = get_caller_address();
             let compute_fees = randomness_dispatcher.compute_premium_fee(caller);
-            let callback_fee_limit = 10000000000000000;
+            let callback_fee_limit = 5000000000000000;
             // Approve the randomness contract to transfer the callback fee
             // You would need to send some ETH to this contract first to cover the fees
             let eth_dispatcher = ERC20ABIDispatcher {
@@ -164,11 +164,11 @@ mod ExampleRandomness {
                     randomness_contract_address,
                     (callback_fee_limit + callback_fee_limit / 5).into()
                 );
-            let calldata = array![];
+            let calldata = array![0x55dce8631e3e9f0d922e965e1b1ec1b78c9f1d2f7e40bd6bc023b8af50b2100];
             // Request the randomness
             let request_id = randomness_dispatcher
                 .request_random(
-                    self.last_request_id.read(), self.callback_address.read(), callback_fee_limit, 1, 1, calldata
+                    self.last_request_id.read()+5, self.callback_address.read(), callback_fee_limit, 1, 1, calldata
                 );
             self.last_request_id.write(request_id);
             let current_block_number = get_block_number();
