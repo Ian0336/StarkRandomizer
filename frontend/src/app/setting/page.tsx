@@ -5,21 +5,33 @@ import {Breadcrumbs, BreadcrumbItem} from "@nextui-org/react";
 import SetUnit from './_components/SetUnit';
 import SetDraw from './_components/SetDraw';
 import Result from './_components/Result';
+import { useRouter } from 'next/navigation'
 
 const Home = () => {
-  const [curState, setCurState] = React.useState("setUnitPool")
+  const rounter = useRouter()
+  const [curState, setCurState] = React.useState(0)
+  const nextOne = () => {
+    setCurState(curState + 1);
+    if (curState === 2){
+      rounter.push('/')
+    }
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    })
+  }
   return (
-    <div className='items-center'>
-      <Breadcrumbs size='lg' color='foreground' variant="solid" separator='' className='pb-3'>
-        <BreadcrumbItem isCurrent={curState === "setUnitPool"}  className='mx-3'>Set Unit Pool</BreadcrumbItem>
+    <div className='items-center w-full'>
+      <Breadcrumbs size='lg' color='foreground' variant="solid" separator='' className='pb-3 w-full'>
+        <BreadcrumbItem isCurrent={curState === 0}  className='mx-3'>Set Unit Pool</BreadcrumbItem>
         <BreadcrumbItem className='mx-3'>{'>>>'}</BreadcrumbItem>
-        <BreadcrumbItem isCurrent={curState === "setDrawingPool"} className='mx-3'>Set Drawing Pool</BreadcrumbItem>
+        <BreadcrumbItem isCurrent={curState === 1} className='mx-3'>Set Drawing Pool</BreadcrumbItem>
         <BreadcrumbItem className='mx-3'>{'>>>'}</BreadcrumbItem>
-        <BreadcrumbItem isCurrent={curState === "results"} className='mx-3'>Results</BreadcrumbItem>
+        <BreadcrumbItem isCurrent={curState === 2} className='mx-3'>Results</BreadcrumbItem>
       </Breadcrumbs>
-      {curState === "setUnitPool" && <SetUnit />}
-      {curState === "setDrawingPool" && <SetDraw />}
-      {curState === "results" && <Result />}
+      {curState === 0 && <SetUnit nextOne={nextOne}/>}
+      {curState === 1 && <SetDraw nextOne={nextOne}/>}
+      {curState === 2 && <Result nextOne={nextOne}/>}
     </div>
   )
 }
