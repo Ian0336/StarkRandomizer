@@ -7,8 +7,13 @@ import Image from 'next/image'
 import { connectWallet } from "../_utils/chain";
 import { useRouter } from 'next/navigation'
 import { usePathname, useSearchParams } from 'next/navigation'
+import { appState } from '../_utils/state';
+import { useSnapshot } from 'valtio';
+import { formatAddress } from "../_utils/helper";
+
 
 export default function MyNavbar() {
+  const {account} = useSnapshot(appState);
   const [curPage, setCurPage] = React.useState();
   const router = useRouter();
   const pathname = usePathname();
@@ -16,6 +21,9 @@ export default function MyNavbar() {
   useEffect(() => {
     setCurPage(pathname)
   }, [pathname, searchParams])
+  const handle_connect = async () => {
+    await connectWallet();
+  }
 
   return (
     <Navbar className="bg-transparent" >
@@ -42,8 +50,8 @@ export default function MyNavbar() {
       <NavbarContent justify="end">
         
         <NavbarItem>
-          <Button as={Link} color="default" onPress={connectWallet} variant="faded">
-            Connect Wallet
+          <Button as={Link} color="default" onClick={()=>connectWallet()} variant="faded">
+            {account ? formatAddress(account.selectedAddress) : "Connect Wallet"}
           </Button>
         </NavbarItem>
       </NavbarContent>

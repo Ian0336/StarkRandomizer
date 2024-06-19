@@ -6,6 +6,9 @@ import card5 from "../../img/cards/5.png";
 
 export const cardImgs = [card1, card1, card2, card3, card4, card5];
 export const allCards = [1,2,3,4,5];
+export const contractAddresses = {
+    nft_address: "0x07b239a8f16a3301bccb00bc073adaebc9f088dbdd393fd88a15b2942bcf1502",
+};
 export const unitPoolInfo = [
     {
         name: "Unit Pool A : Commons",
@@ -35,3 +38,7 @@ export const drawPoolInfo = [
         unit_pool:[0,1,2]
     },
 ];
+
+export const formatAddress = (address: string) => {
+    return address.slice(0,6) + "..." + address.slice(-4);
+}

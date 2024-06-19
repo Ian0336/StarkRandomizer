@@ -6,7 +6,6 @@ import buy_card_banner from "../../img/buy_cards_banner.png";
 import {Card, CardHeader, CardBody, Image, Button, CardFooter} from '@nextui-org/react'
 
 const Home = () => {
-  console.log(buy_card_banner);
   return (
     <>
     {/* <Card className="py-4 bg-transparent border-none">

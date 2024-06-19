@@ -26,7 +26,6 @@ const UnitPool = ({id}) => {
         }
         setProp(tmp)
     }, [])
-    console.log(prop)
   return (
     <div className='border mb-5 p-3'>
     <div className="flex flex-col">
