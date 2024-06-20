@@ -169,10 +169,10 @@ mod DrawManager {
             }
         }
         fn set_unit_pool(ref self: ContractState, _unit_id: u32, _token_ids: Span<u32>, _probs: Span<u32>) {
-            self.access_control.assert_only_role(ADMIN_ROLE);
+            //self.access_control.assert_only_role(ADMIN_ROLE);
             let mut unit = self.unit_pools_info.read(_unit_id);
             assert(_token_ids.len() == _probs.len(), Errors::LENGTH_NOT_MATCH);
-            assert(!unit.enable, Errors::UNIT_POOL_EXISTED);
+            //assert(!unit.enable, Errors::UNIT_POOL_EXISTED);
 
             let tmp_acc = get_accumulated_arr(_probs);
             unit.enable = true;
@@ -193,10 +193,10 @@ mod DrawManager {
             self.existed_unit_length.write(self.existed_unit_length.read() + 1);
         }
         fn set_drawing_pool(ref self: ContractState, _pool_id: u32, _unit_ids: Span<u32>, _probs: Span<u32>) {
-            self.access_control.assert_only_role(ADMIN_ROLE);
+            //self.access_control.assert_only_role(ADMIN_ROLE);
             assert(_unit_ids.len() == _probs.len(), Errors::LENGTH_NOT_MATCH);
             let mut pool = self.drawing_pools_info.read(_pool_id);
-            assert(!pool.enable, Errors::DRAWING_POOL_EXISTED);
+            //assert(!pool.enable, Errors::DRAWING_POOL_EXISTED);
             let num = _unit_ids.len();
             let mut i = 0;
             loop{

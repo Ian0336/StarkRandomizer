@@ -1,20 +1,14 @@
 // @ts-nocheck
 'use client'
 import React from 'react'
-import buy_card_banner from "../../img/buy_cards_banner.png";
-
+import buy_card_banner from "../../img/banner.jpg";
 import {Card, CardHeader, CardBody, Image, Button, CardFooter} from '@nextui-org/react'
-
+import {Popover, PopoverTrigger, PopoverContent} from "@nextui-org/react";
+import { useAccount } from '@starknet-react/core';
 const Home = () => {
+  const {address} = useAccount();
   return (
     <>
-    {/* <Card className="py-4 bg-transparent border-none">
-      
-      <CardBody className="overflow-visible py-2">
-      <Image src={buy_card_banner} alt="Buy Card Banner" width={1000} height={1000} />
-
-      </CardBody>
-    </Card> */}
     <Card className="col-span-12 sm:col-span-4 h-[500px] bg-transparent border-none">
       
       <Image
@@ -25,12 +19,32 @@ const Home = () => {
       />
       <CardFooter className="absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100">
         <div className="flex flex-grow gap-20 items-center justify-end pr-10">
-          <Button color="default" variant="faded" className='w-1/6'>
-            Get 1 card  !
-          </Button>
-          <Button color="default" variant="faded" className='w-1/6'>
-            Get 10 cards !
-          </Button>
+        <Popover placement='up'>
+          <PopoverTrigger>
+            <Button color="default" variant="faded" className='w-1/6'>
+              Get 1 card  !
+            </Button>
+          </PopoverTrigger>
+          {address==null?(<PopoverContent className='text-black'>
+            <div className="px-1 py-2">
+              <div className="text-small font-bold text-red-400">Please connect your wallet</div>
+            </div>
+          </PopoverContent>):(<></>)}
+        </Popover>
+        <Popover placement='up'>
+          <PopoverTrigger>
+            <Button color="default" variant="faded" className='w-1/6'>
+              Get 10 cards !
+            </Button>
+          </PopoverTrigger>
+          {address==null?(<PopoverContent className='text-black'>
+            <div className="px-1 py-2">
+              <div className="text-small font-bold text-red-400">Please connect your wallet</div>
+            </div>
+          </PopoverContent>):(<></>)}
+        </Popover>
+          
+          
         </div>
         
       </CardFooter>

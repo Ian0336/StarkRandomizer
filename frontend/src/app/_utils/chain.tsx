@@ -13,12 +13,13 @@ export const connectWallet = async () => {
     appState.account = null;
     return;
   }
-  let my_account = await connect();
-  if(my_account) {
-    appState.account = my_account;
-    /* console.log("Connected to Starknet");
-    console.log("Account: ", appState.account); */
-  }
+  let connection = await connect();
+  if(connection) {
+	  let my_account = await connection.enable()
+	  connection?.on('networkChanged', () => appState.account = null)
+	  connection?.on('accountsChanged', () => appState.account = null)
+	  appState.account = my_account;
+	}
 }
 
 /* export const fetchNftIdList = async () => {
@@ -38,6 +39,3 @@ export const connectWallet = async () => {
 	console.log('fetch nft id list', nftIdList);
 	appState.collectedNft = proxy(nftIdList);
 }; */
-export function usefetchNftIdList(){
-  
-}

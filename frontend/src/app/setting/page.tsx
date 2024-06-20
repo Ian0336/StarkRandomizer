@@ -6,10 +6,18 @@ import SetUnit from './_components/SetUnit';
 import SetDraw from './_components/SetDraw';
 import Result from './_components/Result';
 import { useRouter } from 'next/navigation'
+import { useAccount } from '@starknet-react/core';
+
 
 const Home = () => {
+  const {address} = useAccount();
   const rounter = useRouter()
   const [curState, setCurState] = React.useState(0)
+  React.useEffect(() => {
+    if(address === null){
+      rounter.push('/shop')
+    }
+  }, [])
   const nextOne = () => {
     setCurState(curState + 1);
     if (curState === 2){

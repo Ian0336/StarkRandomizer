@@ -3,25 +3,21 @@
 import React, { useEffect } from "react";
 import {Card, CardBody, CardFooter, Image} from "@nextui-org/react";
 import {cardImgs, allCards, contractAddresses} from '../_utils/helper'
-import useFetchNFT from "../_utils/hooks/useFetchNFT1";
+import useFetchNFT from "../_utils/hooks/useFetchNFT";
+import { Spinner } from "@nextui-org/react";
+import { useAccount } from "@starknet-react/core";
 
 
 const Home = () => {
+  const {address} = useAccount();
+  const [loading, setLoading] = React.useState(false)
   const [nftIdList, setNftIdList] = React.useState([])
   const [nftIdNums, setNftIdNums] = React.useState([])
-  const value1 = useFetchNFT(1)
-  const value2 = useFetchNFT(2)
-  const value3 = useFetchNFT(3)
-  const value4 = useFetchNFT(4)
-  const value5 = useFetchNFT(5)
-  console.log(value1)
-  useEffect(() => {
-    if (value1 !== undefined && value2 !== undefined && value3 !== undefined && value4 !== undefined && value5 !== undefined) {
-      setNftIdNums([0, value1, value2, value3, value4, value5]);
-      
-    }
-    
-  }, [value1, value2, value3, value4, value5])
+  const nft1 = useFetchNFT(1)
+  const nft2 = useFetchNFT(2)
+  const nft3 = useFetchNFT(3)
+  const nft4 = useFetchNFT(4)
+  const nft5 = useFetchNFT(5)
   useEffect(() => {
     let tmp = []
     for (let i = 0; i < allCards.length; i++) {
@@ -33,25 +29,33 @@ const Home = () => {
     }
     setNftIdList(tmp)
   }, [nftIdNums])
-  console.log(nftIdList)
+  useEffect(() => {
+    if(nft1.isLoading === false && nft2.isLoading === false && nft3.isLoading === false && nft4.isLoading === false && nft5.isLoading === false) {
+      setLoading(false)
+      setNftIdNums([0, nft1.value, nft2.value, nft3.value, nft4.value, nft5.value]);
+    }
+  }, [nft1.isLoading, nft2.isLoading, nft3.isLoading, nft4.isLoading, nft5.isLoading])
   return (
-    <div className="gap-10 grid grid-cols-2 sm:grid-cols-5">
-      {cardImgs[0] !== undefined ? nftIdList.map((item, index) => (
-        <Card key={index} /* isPressable onPress={() => console.log("item pressed")} */ className="bg-transparent border-none shadow-none">
-          <CardBody className="overflow-visible p-0">
-            <Image
-              
-              radius="lg"
-              width="100%"
-              alt={`Card ${item}`}
-              className="w-full object-cover h-[330px]"
-              src={cardImgs[item].src}
-            />
-          </CardBody>
-          
-        </Card>
-      )):<></>}
-    </div>
+    <>
+    {loading && address!=null ? <Spinner /> :<></>}
+      <div className="gap-10 grid grid-cols-2 sm:grid-cols-5">
+        {cardImgs[0] !== undefined ? nftIdList.map((item, index) => (
+          <Card key={index} className="bg-transparent border-none shadow-none">
+            <CardBody className="overflow-visible p-0">
+              <Image
+                
+                radius="lg"
+                width="100%"
+                alt={`Card ${item}`}
+                className="w-full object-cover h-[330px]"
+                src={cardImgs[item].src}
+              />
+            </CardBody>
+            
+          </Card>
+        )):<></>}
+      </div>
+    </>
   )
 }
 
