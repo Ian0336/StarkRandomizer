@@ -7,6 +7,8 @@ import {cardImgs, unitPoolInfo, drawPoolInfo} from '../../_utils/helper'
 import { useContract, useContractWrite, useAccount } from '@starknet-react/core';
 import drawAbi from '../../_utils/abi/drawAbi.json';
 import { contractAddresses } from '../../_utils/helper';
+import { appState } from '../../_utils/state';
+import { snapshot } from 'valtio';
 
 const SetDraw = ({nextOne}) => {
   const [loading, setLoading] = React.useState(false)
@@ -47,6 +49,8 @@ const DrawPool = ({id, setLoading}) => {
     setIsLoading(isPending)
   }, [isPending])
   const handleSetDrawingPool = () => {
+    appState.drawingPoolProps[id].unit_pool_prop = prop
+    appState.drawingPoolProps[id].unit_pool = tokenIds
     writeAsync()
   }
 

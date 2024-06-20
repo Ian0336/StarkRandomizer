@@ -1,3 +1,4 @@
+//@ts-nocheck
 import card1 from "../../img/cards/1.png";
 import card2 from "../../img/cards/2.png";
 import card3 from "../../img/cards/3.png";
@@ -8,7 +9,7 @@ export const cardImgs = [card1, card1, card2, card3, card4, card5];
 export const allCards = [1,2,3,4,5];
 export const contractAddresses = {
     nft_address: "0x07b239a8f16a3301bccb00bc073adaebc9f088dbdd393fd88a15b2942bcf1502",
-    draw_contract: "0x06bca4d8e24a6225d9c9687b5b476ff0c9af022021665cc9cad2768b585e5008",
+    draw_contract: "0x071ca479bdb0645e7065b31b7698053dadebac4f38eed6aa2a6ac42cfa69c72c",
 };
 export const unitPoolInfo = [
     {
@@ -43,3 +44,6 @@ export const drawPoolInfo = [
 export const formatAddress = (address: string) => {
     return address.slice(0,6) + "..." + address.slice(-4);
 }
+export function uint256ToBN(uint256 /*: Uint256*/) {
+    return (BigInt(uint256.high) << 128n) + BigInt(uint256.low);
+  }

@@ -14,7 +14,7 @@ const useFetchNFT = (ids) => {
       address: contractAddresses.nft_address,
       args: [address, ids],
       watch: true,
-      blockIdentifier: BlockTag.latest
+      blockIdentifier: BlockTag.pending
     });
     React.useEffect(() => {
       if(address === undefined) return;

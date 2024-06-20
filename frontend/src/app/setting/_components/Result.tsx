@@ -5,10 +5,12 @@ import {Accordion, AccordionItem, Image, Button} from "@nextui-org/react";
 import {cardImgs, unitPoolInfo, drawPoolInfo} from '../../_utils/helper';
 import useFetchUnitPoolProp from '../../_utils/hooks/useFetchUnitPoolProp'
 import useFetchDrawPoolProp from '@/app/_utils/hooks/useFetchDrawPoolProp';
-
+import { appState } from '../../_utils/state';
+import { useSnapshot } from 'valtio';
 
 
 const Result = ({nextOne}) => {
+  //const {unitPoolProp, drawingPoolProps} = useSnapshot(appState);
   const [isLoading, setIsLoading] = React.useState(true);
   const [unitPoolProp, setUnitPoolProp] = React.useState([{},{},{}]);
   const [drawingPoolProps, setDrawingPoolProps] = React.useState([{},{}]);
@@ -51,7 +53,7 @@ const Result = ({nextOne}) => {
       
     </Accordion>
     <Button color="default" variant="faded" size='lg' onPress={nextOne}>
-      GO TO BUY NOW !!
+      GO TO GET NOW !!
     </Button>
   </>
   )

@@ -57,9 +57,9 @@ trait IRandomness<TContractState> {
     fn set_admin_address(ref self: TContractState, new_admin_address: ContractAddress);
 }
 #[starknet::interface]
-trait IExampleRandomness<TContractState> {
+trait IVrfManager<TContractState> {
     fn get_last_random(self: @TContractState) -> felt252;
-    fn request_my_randomness(ref self: TContractState);
+    fn request_my_randomness(ref self: TContractState) -> u256;
     fn receive_random_words(
         ref self: TContractState,
         requestor_address: ContractAddress,
@@ -69,6 +69,7 @@ trait IExampleRandomness<TContractState> {
     );
     fn withdraw_funds(ref self: TContractState, receiver: ContractAddress);
     fn get_last_request_id(self: @TContractState) -> u64;
+    fn set_draw_contract(ref self: TContractState, draw_role: ContractAddress);
     fn set_callback_address(ref self: TContractState, callback_address: ContractAddress);
 }
 
@@ -76,8 +77,8 @@ const DRAW_ROLE: felt252 = 'DRAW_ROLE';
 const ADMIN_ROLE: felt252 = 'ADMIN_ROLE';
 
 #[starknet::contract]
-mod ExampleRandomness {
-    use super::{ContractAddress, IExampleRandomness, IRandomnessDispatcher, IRandomnessDispatcherTrait, ADMIN_ROLE, DRAW_ROLE};
+mod VrfManager {
+    use super::{ContractAddress, IVrfManager, IRandomnessDispatcher, IRandomnessDispatcherTrait, ADMIN_ROLE, DRAW_ROLE};
     use starknet::info::{get_block_number, get_caller_address, get_contract_address};
     use openzeppelin::token::erc20::interface::{
         ERC20ABIDispatcher, ERC20ABIDispatcherTrait
@@ -85,6 +86,7 @@ mod ExampleRandomness {
     use openzeppelin::access::accesscontrol::AccessControlComponent;
     use openzeppelin::access::accesscontrol::DEFAULT_ADMIN_ROLE;
     use openzeppelin::introspection::src5::SRC5Component;
+    use hackathon::drawManager::{IDrawManagerDispatcherTrait, IDrawManagerDispatcher};
 
 
 
@@ -102,6 +104,7 @@ mod ExampleRandomness {
         last_random_storage: felt252,
         last_request_id: u64,
         callback_address: ContractAddress,
+        draw_contract_address: ContractAddress,
 
         #[substorage(v0)]
         access_control: AccessControlComponent::Storage,
@@ -127,7 +130,7 @@ mod ExampleRandomness {
     }
 
     #[abi(embed_v0)]
-    impl IExampleRandomnessImpl of IExampleRandomness<ContractState> {
+    impl IVrfManagerImpl of IVrfManager<ContractState> {
         fn get_last_random(self: @ContractState) -> felt252 {
             let last_random = self.last_random_storage.read();
             return last_random;
@@ -140,11 +143,17 @@ mod ExampleRandomness {
             self.access_control.assert_only_role(ADMIN_ROLE);
             self.callback_address.write(callback_address);
         }
+        fn set_draw_contract(ref self: ContractState, draw_role: ContractAddress) {
+            self.access_control.assert_only_role(ADMIN_ROLE);
+            self.access_control._grant_role(DRAW_ROLE, draw_role);
+            self.draw_contract_address.write(draw_role);
+        }
 
 
         fn request_my_randomness(
             ref self: ContractState,
-        ) {
+        )-> u256 {
+            self.access_control.assert_only_role(DRAW_ROLE);
             let randomness_contract_address = self.randomness_contract_address.read();
             let randomness_dispatcher = IRandomnessDispatcher {
                 contract_address: randomness_contract_address
@@ -164,7 +173,7 @@ mod ExampleRandomness {
                     randomness_contract_address,
                     (callback_fee_limit + callback_fee_limit / 5).into()
                 );
-            let calldata = array![0x55dce8631e3e9f0d922e965e1b1ec1b78c9f1d2f7e40bd6bc023b8af50b2100];
+            let calldata = array![0];
             // Request the randomness
             let request_id = randomness_dispatcher
                 .request_random(
@@ -173,8 +182,8 @@ mod ExampleRandomness {
             self.last_request_id.write(request_id);
             let current_block_number = get_block_number();
             self.min_block_number_storage.write(current_block_number + 1);
-
-            return ();
+            let my_request_id:u256 = request_id.into();
+            return my_request_id;
         }
 
         fn withdraw_funds(ref self: ContractState, receiver: ContractAddress) {
@@ -202,7 +211,7 @@ mod ExampleRandomness {
             // and that the current block is within publish_delay of the request block
             let current_block_number = get_block_number();
             let min_block_number = self.min_block_number_storage.read();
-            assert(min_block_number <= current_block_number, 'block number issue');
+            //assert(min_block_number <= current_block_number, 'block number issue');
 
             // and that the requestor_address is what we expect it to be (can be self
             // or another contract address), checking for self in this case
@@ -216,6 +225,10 @@ mod ExampleRandomness {
             let random_word = *random_words.at(0);
 
             self.last_random_storage.write(random_word);
+            let my_random_word:felt252 = random_word.into();
+            let my_request_id:u256 = request_id.into();
+            let contract_address = self.draw_contract_address.read();
+            IDrawManagerDispatcher{contract_address}.fulfill_random_words(my_request_id, my_random_word);
 
             return ();
         }

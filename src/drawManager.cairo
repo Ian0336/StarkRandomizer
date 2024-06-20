@@ -65,10 +65,16 @@ pub struct RequestCompleted {
     pub requester: ContractAddress,
     pub ids: Span<u256>,
 }
+#[derive(Drop, PartialEq, starknet::Event)]
+pub struct RequestSend {
+    #[key]
+    pub requestId: u256,
+    pub requester: ContractAddress,
+}
 
 #[starknet::contract]
 mod DrawManager {
-    use super::{ADMIN_ROLE, RequestInfo, IDrawManager, Errors, PoolInfo, FULFILL_ROLE, RequestCompleted, U32MAX};
+    use super::{ADMIN_ROLE, RequestInfo, IDrawManager, Errors, PoolInfo, FULFILL_ROLE, RequestCompleted, U32MAX, RequestSend};
     use starknet::ContractAddress;
     use starknet::get_caller_address;
     use openzeppelin::access::accesscontrol::AccessControlComponent;
@@ -77,6 +83,7 @@ mod DrawManager {
     use core::poseidon::PoseidonTrait;
     use core::hash::{HashStateTrait, HashStateExTrait};
     use hackathon::prizeItems::{IPrizeItemsDispatcherTrait, IPrizeItemsDispatcher};
+    use hackathon::vrfManager::{IVrfManagerDispatcherTrait, IVrfManagerDispatcher};
 
 
     component!(path: AccessControlComponent, storage: access_control, event: AccessControlEvent);
@@ -133,6 +140,7 @@ mod DrawManager {
         SRC5Event: SRC5Component::Event,
        
         RequestCompleted: RequestCompleted,
+        RequestSend: RequestSend,
     }
     #[constructor]
     fn constructor(
@@ -228,8 +236,8 @@ mod DrawManager {
         fn send_request(ref self: ContractState, _pools_id: Span<u32>, _draw_amounts: Span<u32>) {
             let _user = get_caller_address();
             assert(_pools_id.len() == _draw_amounts.len(), Errors::LENGTH_NOT_MATCH);
-            //test let request_id: u256 = vrf
-            let request_id: u256 = self.requests_queue_num.read();
+            let contract_address = self.vrf_contract.read();
+            let request_id: u256 = IVrfManagerDispatcher{contract_address}.request_my_randomness();
             let mut request = self.requests_info.read(request_id);
             request.exists = true;
             request.request_sender = _user;
@@ -249,10 +257,11 @@ mod DrawManager {
             let queue_num = self.requests_queue_num.read();
             self.requests_queue.write(queue_num, request_id);
             self.requests_queue_num.write(queue_num + 1);
+            self.emit(RequestSend{requestId: request_id, requester: _user});
             
         }
         fn fulfill_random_words(ref self: ContractState, _request_id: u256, _random_words: felt252) {
-            //test self.access_control.assert_only_role(FULFILL_ROLE);
+            self.access_control.assert_only_role(FULFILL_ROLE);
             let mut request = self.requests_info.read(_request_id);
             assert(request.exists, Errors::REQUEST_NOT_EXIST);
             assert(!request.fulfilled, Errors::REQUEST_ALREADY_FULFILLED);

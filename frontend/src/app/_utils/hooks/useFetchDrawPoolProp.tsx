@@ -14,7 +14,7 @@ const useFetchDrawPoolProp = (ids) => {
       address: contractAddresses.draw_contract,
       args: [ids],
       watch: true,
-      blockIdentifier: BlockTag.latest
+      blockIdentifier: BlockTag.pending
     });
     React.useEffect(() => {
       if(address === undefined) return;
