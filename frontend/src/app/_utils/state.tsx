@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { proxy } from 'valtio';
+import { unitPoolInfo } from './helper';
 
 /* interface AppState {
 	address: string;
@@ -10,9 +11,31 @@ import { proxy } from 'valtio';
 } */
 
 export const appState = proxy<AppState>({
-    account: null,
 	requestId: '',
 	cardResult: [],
 	transactionId: '',
-	collectedNft: [],
+	drawingPoolProps:[
+		{
+			"unit_pool": [],
+			"unit_pool_prop": []
+		},
+		{
+			"unit_pool": [],
+			"unit_pool_prop": []
+		},
+	],
+	unitPoolProp:[
+		{
+			"token_pool": [],
+			"token_pool_prop": []
+		},
+		{
+			"token_pool": [],
+			"token_pool_prop": []
+		},
+		{
+			"token_pool": [],
+			"token_pool_prop": []
+		}
+	],
 });
