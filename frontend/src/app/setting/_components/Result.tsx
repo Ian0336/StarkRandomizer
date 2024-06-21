@@ -10,25 +10,25 @@ import { useSnapshot } from 'valtio';
 
 
 const Result = ({nextOne}) => {
-  //const {unitPoolProp, drawingPoolProps} = useSnapshot(appState);
+  const {unitPoolProp, drawingPoolProps} = useSnapshot(appState);
   const [isLoading, setIsLoading] = React.useState(true);
-  const [unitPoolProp, setUnitPoolProp] = React.useState([{},{},{}]);
-  const [drawingPoolProps, setDrawingPoolProps] = React.useState([{},{}]);
+  /* const [unitPoolProp, setUnitPoolProp] = React.useState([{},{},{}]);
+  const [drawingPoolProps, setDrawingPoolProps] = React.useState([{},{}]); */
 
 
-  const unitPool0 = useFetchUnitPoolProp(0);
+  /* const unitPool0 = useFetchUnitPoolProp(0);
   const unitPool1 = useFetchUnitPoolProp(1);
   const unitPool2 = useFetchUnitPoolProp(2);
   const drawingPool0 = useFetchDrawPoolProp(0);
-  const drawingPool1 = useFetchDrawPoolProp(1);
+  const drawingPool1 = useFetchDrawPoolProp(1); */
 
-  React.useEffect(() => {
+  /* React.useEffect(() => {
     if(unitPool0.isLoading === false && unitPool1.isLoading === false && unitPool2.isLoading === false && drawingPool0.isLoading === false && drawingPool1.isLoading === false) {
       setIsLoading(false);
       setDrawingPoolProps([drawingPool0, drawingPool1]);
       setUnitPoolProp([unitPool0, unitPool1, unitPool2]);
     }
-  }, [unitPool0.isLoading, unitPool1.isLoading, unitPool2.isLoading, drawingPool0.isLoading, drawingPool1.isLoading])
+  }, [unitPool0.isLoading, unitPool1.isLoading, unitPool2.isLoading, drawingPool0.isLoading, drawingPool1.isLoading]) */
   return (
     <> 
       <Accordion className='text-white'>

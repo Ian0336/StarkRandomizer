@@ -15,6 +15,7 @@ import { on } from 'events';
 import {Uint256, hash, num} from 'starknet';
 import {uint256ToBN } from '../_utils/helper';
 import { appState } from '../_utils/state';
+import { useRouter } from 'next/navigation'
 
 const Home = () => {
   const {address} = useAccount();
@@ -32,10 +33,10 @@ const Home = () => {
       />
       <CardFooter className="absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100">
         <div className="flex flex-grow gap-20 items-center justify-end pr-10">
-        <Button color="default" variant="faded" className='w-1/4' onPress={()=>{model1.onOpen();console.log('ter')}}>
+        <Button color="default" variant="faded" className='w-1/4' onPress={()=>model1.onOpen()}>
           Get Normal Packs !
         </Button>
-        <Button color="default" variant="faded" className='w-1/4'>
+        <Button color="default" variant="faded" className='w-1/4' onPress={()=>model2.onOpen()}>
             Get Special Packs !
           </Button>
           
@@ -45,6 +46,7 @@ const Home = () => {
       </CardFooter>
       
       <GetModel isOpen={model1.isOpen} onOpenChange={model1.onOpenChange} idx={0}/>
+      <GetModel isOpen={model2.isOpen} onOpenChange={model2.onOpenChange} idx={1}/>
     </Card>
     </>
   )
@@ -55,6 +57,7 @@ function GetModel({ isOpen, onOpenChange,idx}) {
   const [NFTIds, setNFTIds] = React.useState(null);
   const [curState, setCurState] = React.useState(0);
   const [myEvent, setMyEvent] = React.useState(null);
+  const router = useRouter();
   const [requestId, setRequestId] = React.useState({low:0, high:0});
   const {provider} = useProvider();
   // State: 0:before submit, 1:submitting, 2:isLoading, 3:get TX(Wait for VRF), 4:get the result
@@ -84,6 +87,7 @@ function GetModel({ isOpen, onOpenChange,idx}) {
       setRequestId({low:0, high:0});
       reset();
       onOpenChange(false);
+      router.push('/reveal');
 
       
     }
@@ -117,7 +121,7 @@ function GetModel({ isOpen, onOpenChange,idx}) {
     } else if (isLoading) {
       setCurState(2);
     } else if (receipt) {
-      setRequestId({low: receipt.events[0].keys[1], high: receipt.events[0].keys[2]});
+      setRequestId(prev=>({low: receipt.events[4].keys[1], high: receipt.events[4].keys[2]}));
       setCurState(3);
     }
   }, [isSubmitting, isLoading, receipt, isSubmitError]);
@@ -140,6 +144,7 @@ function GetModel({ isOpen, onOpenChange,idx}) {
   const fetchVRF = async () => {
     if(curState !== 3) return;
     const lastBlock = await provider.getBlock('latest');
+    console.log('requestId:', requestId)
     const keyFilter = [num.toHex(hash.starknetKeccak('RequestCompleted')), num.toHex(requestId.low), num.toHex(requestId.high)];
     let eventsListObj = await provider.getEvents({
       address: contractAddresses.draw_contract,
@@ -149,17 +154,14 @@ function GetModel({ isOpen, onOpenChange,idx}) {
       chunk_size: 10,
     });
     let eventsList = eventsListObj.events;
-
-    
+    console.log('looking for VRF tx with requestId:', requestId.low, requestId.high)
     for(let i = 0; i < eventsList.length; i++){
-      console.log(eventsList[i].keys[1], requestId.low, eventsList[i].keys[2], requestId.high)
       
       if(eventsList[i].keys[1] == requestId.low && eventsList[i].keys[2] === requestId.high){
-        console.log(eventsList[i].data);
         let tmp = eventsList[i].data.slice(2)
         let tmp2 = []
-        console.log(tmp);
         for (let i = 0; i < tmp.length; i+=2){
+          //if(tmp[i] !== undefined && tmp[i+1] !== undefined)
           let u256T = {low: tmp[i], high: tmp[i+1]}
           tmp2.push(uint256ToBN(u256T))
         }
@@ -185,7 +187,7 @@ function GetModel({ isOpen, onOpenChange,idx}) {
             curState === 4 ? "Open your packs" : ""
             }</ModalHeader>
           <ModalBody >
-            {curState === 3 ?(<div>Request Transaction Hash: <Link onPress={() => window.open(`https://sepolia.starkscan.co/tx/${receipt.transaction_hash}`, '_blank').focus()}>{receipt.transaction_hash}</Link></div>) : ""}
+            {curState >= 3?(<div>Request Transaction Hash: <Link onPress={() => window.open(`https://sepolia.starkscan.co/tx/${receipt.transaction_hash}`, '_blank').focus()}>{receipt.transaction_hash}</Link></div>) : ""}
             {curState === 4 ?(<div>VRF Transaction Hash: <Link onPress={() => window.open(`https://sepolia.starkscan.co/tx/${myEvent.transaction_hash}`, '_blank').focus()}>{myEvent.transaction_hash}</Link></div>) : ""}
           </ModalBody>
           <ModalFooter>

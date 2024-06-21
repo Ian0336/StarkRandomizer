@@ -1,21 +1,23 @@
 // @ts-nocheck
 'use client'
 import React, { useEffect } from "react";
-import {Card, CardBody, CardFooter, Image} from "@nextui-org/react";
+import {Button, Card, CardBody, CardFooter, Image} from "@nextui-org/react";
 import {cardImgs, allCards, contractAddresses} from '../_utils/helper'
 import useFetchNFT from "../_utils/hooks/useFetchNFT";
 import { Spinner } from "@nextui-org/react";
 import { useAccount } from "@starknet-react/core";
 import { appState } from "../_utils/state";
 import { useSnapshot } from "valtio";
+import { useRouter } from 'next/navigation'
 import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure} from "@nextui-org/react"; 
 const Home = () => {
+  const router = useRouter();
   const {address} = useAccount(); 
   const {cardResult} = useSnapshot(appState);
   const {isOpen, onOpen, onOpenChange} = useDisclosure();
-  React.useEffect(() => {
+  /* React.useEffect(() => {
     onOpen();
-  }, [])
+  }, []) */
   return (
     <>
     <VideoModel isOpen={isOpen} onOpenChange={onOpenChange}/>
@@ -36,6 +38,9 @@ const Home = () => {
           </Card>
         )):<></>}
       </div>
+      <Button color="default" variant="faded" className='w-1/4 mt-5' onPress={()=>{router.push('/shop')}}>
+        Collected !
+      </Button>
     </>
   )
 }

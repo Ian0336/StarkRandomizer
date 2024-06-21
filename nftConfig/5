@@ -1,0 +1,19 @@
+{
+    "name": "Seekers Alliance #005",
+    "description": "Demo NFTs for StarkHack use.\n\n\"100 Bounty Cards, infinite paths to victory!\"",
+    "image": "ipfs://XXXTBDXXX",
+    "attributes": [
+        {
+            "trait_type": "Name",
+            "value": "Shuriken"
+        },
+        {
+            "trait_type": "Rarity",
+            "value": "Common"
+        },
+         {
+            "trait_type": "Type",
+            "value": "Skill Card"
+        }
+    ]
+}

@@ -49,7 +49,7 @@ const DrawPool = ({id, setLoading}) => {
     setIsLoading(isPending)
   }, [isPending]) */
   const handleSetDrawingPool = () => {
-    appState.drawingPoolProps[id].unit_pool_prop = prop
+    appState.drawingPoolProps[id].unit_pool_prop = prop.map((item) => Math.round(item/100))
     appState.drawingPoolProps[id].unit_pool = tokenIds
     writeAsync()
   }

@@ -9,7 +9,7 @@ export const cardImgs = [card1, card1, card2, card3, card4, card5];
 export const allCards = [1,2,3,4,5];
 export const contractAddresses = {
     nft_address: "0x07b239a8f16a3301bccb00bc073adaebc9f088dbdd393fd88a15b2942bcf1502",
-    draw_contract: "0x071ca479bdb0645e7065b31b7698053dadebac4f38eed6aa2a6ac42cfa69c72c",
+    draw_contract: "0x02428a094ebb89c972847e625f88579752f95ff29c3bf0c30299d8133c323cf7",
 };
 export const unitPoolInfo = [
     {

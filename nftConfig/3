@@ -1,0 +1,19 @@
+{
+    "name": "Seekers Alliance #003",
+    "description": "Demo NFTs for StarkHack use.\n\n\"100 Bounty Cards, infinite paths to victory!\"",
+    "image": "ipfs://XXXTBDXXX",
+    "attributes": [
+        {
+            "trait_type": "Name",
+            "value": "Energy Shield"
+        },
+        {
+            "trait_type": "Rarity",
+            "value": "Uncommon"
+        },
+         {
+            "trait_type": "Type",
+            "value": "Skill Card"
+        }
+    ]
+}

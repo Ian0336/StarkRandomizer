@@ -51,7 +51,7 @@ const UnitPool = ({id, setLoading}) => {
       setIsLoading(isPending)
     }, [isPending]) */
     const handleSetUnitPool = () => {
-      appState.unitPoolProp[id].token_pool_prop = prop
+      appState.unitPoolProp[id].token_pool_prop = prop.map((item) => Math.round(item/100))
       appState.unitPoolProp[id].token_pool = tokenIds
       writeAsync()
     }
