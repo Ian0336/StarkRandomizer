@@ -39,7 +39,7 @@ const Home = () => {
         <BreadcrumbItem className='mx-3'>{'>>>'}</BreadcrumbItem>
         <BreadcrumbItem isCurrent={curState === 2} className='mx-3'>Set Drawing Pool</BreadcrumbItem>
         <BreadcrumbItem className='mx-3'>{'>>>'}</BreadcrumbItem>
-        <BreadcrumbItem isCurrent={curState === 3} className='mx-3'>Results</BreadcrumbItem>
+        <BreadcrumbItem isCurrent={curState === 3} className='mx-3'>Current Configurations</BreadcrumbItem>
       </Breadcrumbs>
       {curState === 0 && <SetTokenAmount nextOne={nextOne} />}
       {curState === 1 && <SetUnit nextOne={nextOne} />}

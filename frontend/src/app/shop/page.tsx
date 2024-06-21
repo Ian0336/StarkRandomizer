@@ -34,10 +34,10 @@ const Home = () => {
       <CardFooter className="absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100">
         <div className="flex flex-grow gap-20 items-center justify-end pr-10">
         <Button color="default" variant="faded" className='w-1/4' onPress={()=>model1.onOpen()}>
-          Get Normal Packs !
+            Draw from Normal Pool
         </Button>
         <Button color="default" variant="faded" className='w-1/4' onPress={()=>model2.onOpen()}>
-            Get Special Packs !
+            Draw from Special Pool
           </Button>
           
           
@@ -180,10 +180,10 @@ function GetModel({ isOpen, onOpenChange,idx}) {
       {(onClose) => (
         <>
           <ModalHeader className="flex flex-col gap-1">{
-            curState === 0 ? `Get 10 ${idx == 0 ? "Normal" : "Special"} Packs` :
+            curState === 0 ? `Draw 10 cards from ${idx == 0 ? "Normal" : "Special"} Pool` :
             curState === 1 ? "Submitting..." :
             curState === 2 ? "Loading..." :
-            curState === 3 ? "Wait for VRF..." :
+            curState === 3 ? "Waiting for VRF…" :
             curState === 4 ? "Open your packs" : ""
             }</ModalHeader>
           <ModalBody >
@@ -192,7 +192,10 @@ function GetModel({ isOpen, onOpenChange,idx}) {
           </ModalBody>
           <ModalFooter>
             <Button color="default" variant="faded" className='w-1/4' isLoading={curState!==0&&curState!==4} onPress={handleBtnPress}>
-              {curState === 0 ? `Get Now` :'Open Packs'}
+              {
+                curState === 0 ? `DRAW`:
+                curState === 4 ? "Open Packs" : "Drawing Cards"
+              }
             </Button>
           </ModalFooter>
 

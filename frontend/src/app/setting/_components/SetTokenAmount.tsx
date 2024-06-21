@@ -17,7 +17,7 @@ const SetTokenAmount = ({nextOne}) => {
   <div>
     <TokenPool setLoading={setLoading}></TokenPool>
     <Button color="default" variant="faded" size='lg' onPress={nextOne} isLoading={loading}>
-      Next Step !!
+        NEXT
     </Button>
   </div>
   )
@@ -68,7 +68,6 @@ const TokenPool = ({setLoading}) => {
     }, [isLoading, setLoading])
   // contract call
 
-  console.log(amount)
   return (
     <div className='border mb-5 p-3'>
     <div className="flex flex-col">

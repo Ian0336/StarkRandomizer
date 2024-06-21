@@ -53,7 +53,7 @@ const Result = ({nextOne}) => {
       
     </Accordion>
     <Button color="default" variant="faded" size='lg' onPress={nextOne}>
-      GO TO GET NOW !!
+      Finish Setup
     </Button>
   </>
   )

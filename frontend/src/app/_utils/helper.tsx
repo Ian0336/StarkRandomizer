@@ -30,13 +30,13 @@ export const unitPoolInfo = [
 ];
 export const drawPoolInfo = [
     {
-        name: "Draw Pool A : Normals Card Pack",
-        short:"Draw Pool A",
+        name: "Drawing Pool A: Normal",
+        short:"Drawing Pool A",
         unit_pool:[0,1,2]
     },
     {
-        name: "Draw Pool B : Special Card Pack",
-        short:"Draw Pool B",
+        name: "Drawing Pool B: Special",
+        short:"Drawing Pool B",
         unit_pool:[0,1,2]
     },
 ];

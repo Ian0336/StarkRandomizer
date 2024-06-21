@@ -19,7 +19,7 @@ const SetUnit = ({nextOne}) => {
         <UnitPool key={index} id={index} setLoading={setLoading} />
     ))}
     <Button color="default" variant="faded" size='lg' onPress={nextOne} isLoading={loading}>
-      Next Step !!
+    NEXT
     </Button>
   </div>
   )
