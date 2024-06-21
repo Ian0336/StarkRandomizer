@@ -44,10 +44,10 @@ const DrawPool = ({id, setLoading}) => {
     setTokenIds(prev=>all_non_zero_idx)
     setProp(prev=>non_zero_val)
   }, [tmpProp])
-  React.useEffect(() => {
+  /* React.useEffect(() => {
     setLoading(isPending)
     setIsLoading(isPending)
-  }, [isPending])
+  }, [isPending]) */
   const handleSetDrawingPool = () => {
     appState.drawingPoolProps[id].unit_pool_prop = prop
     appState.drawingPoolProps[id].unit_pool = tokenIds
@@ -108,7 +108,7 @@ const DrawPool = ({id, setLoading}) => {
       ))}
         
       </div>
-      <Button color="default" variant="faded" className='w-1/4 mt-3' size='lg' isLoading={isLoading} onPress={handleSetDrawingPool}>
+      <Button color="default" variant="faded" className='w-1/4 mt-3' size='lg' isLoading={isPending} onPress={handleSetDrawingPool}>
             {`Set ${drawPoolInfo[id].short}`}
       </Button>
     </div>

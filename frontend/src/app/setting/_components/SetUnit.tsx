@@ -46,10 +46,10 @@ const UnitPool = ({id, setLoading}) => {
       setTokenIds(prev=>all_non_zero_idx)
       setProp(prev=>non_zero_val)
     }, [tmpProp])
-    React.useEffect(() => {
+    /* React.useEffect(() => {
       setLoading(isPending)
       setIsLoading(isPending)
-    }, [isPending])
+    }, [isPending]) */
     const handleSetUnitPool = () => {
       appState.unitPoolProp[id].token_pool_prop = prop
       appState.unitPoolProp[id].token_pool = tokenIds
@@ -112,7 +112,7 @@ const UnitPool = ({id, setLoading}) => {
       ))}
         
       </div>
-      <Button color="default" variant="faded" className='w-1/4 mt-3' size='lg' onPress={handleSetUnitPool} isLoading={isLoading}>
+      <Button color="default" variant="faded" className='w-1/4 mt-3' size='lg' onPress={handleSetUnitPool} isLoading={isPending}>
             {`Set ${unitPoolInfo[id].short}`}
       </Button>
     </div>
