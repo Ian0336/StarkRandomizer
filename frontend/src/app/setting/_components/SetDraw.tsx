@@ -4,7 +4,7 @@ import React from 'react'
 import { Button } from '@nextui-org/react'
 import {Card, CardHeader, CardBody, CardFooter, Divider, Input, Image} from "@nextui-org/react";
 import {cardImgs, unitPoolInfo, drawPoolInfo} from '../../_utils/helper'
-import { useContract, useContractWrite, useAccount } from '@starknet-react/core';
+import { useContract, useContractWrite, useAccount, useWaitForTransaction } from '@starknet-react/core';
 import drawAbi from '../../_utils/abi/drawAbi.json';
 import { contractAddresses } from '../../_utils/helper';
 import { appState } from '../../_utils/state';
@@ -26,7 +26,6 @@ const SetDraw = ({nextOne}) => {
 const DrawPool = ({id, setLoading}) => {
   const [tmpProp, setTmpProp] = React.useState([])
   const [prop, setProp] = React.useState([])
-  const [isLoading, setIsLoading] = React.useState(false)
   const [tokenIds, setTokenIds] = React.useState([])
   React.useEffect(() => {
     setTmpProp(new Array(drawPoolInfo[id].unit_pool.length).fill(0))
@@ -70,11 +69,29 @@ const DrawPool = ({id, setLoading}) => {
 
   const {
     writeAsync,
-    data,
-    isPending,
+    reset,
+    data: tx,
+    isLoading: isSubmitting,
+    isError: isSubmitError,
+    error: submitError,
   } = useContractWrite({
     calls,
-  }); 
+  });
+  const {
+    data: receipt,
+    isLoading,
+    isError,
+    error,
+  } = useWaitForTransaction({
+    hash: tx?.transaction_hash,
+    watch: true,
+    retry: true,
+    refetchInterval: 1000,
+  });
+
+  React.useEffect(() => {
+    setLoading(isLoading)
+  }, [isLoading, setLoading])
 // contract call
 
   return (
@@ -108,7 +125,7 @@ const DrawPool = ({id, setLoading}) => {
       ))}
         
       </div>
-      <Button color="default" variant="faded" className='w-1/4 mt-3' size='lg' isLoading={isPending} onPress={handleSetDrawingPool}>
+      <Button color="default" variant="faded" className='w-1/4 mt-3' size='lg' isLoading={isLoading} onPress={handleSetDrawingPool}>
             {`Set ${drawPoolInfo[id].short}`}
       </Button>
     </div>

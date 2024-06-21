@@ -3,55 +3,28 @@
 import React from 'react'
 import { Button } from '@nextui-org/react'
 import {Card, CardHeader, CardBody, CardFooter, Divider, Input, Image} from "@nextui-org/react";
-import {cardImgs, unitPoolInfo} from '../../_utils/helper'
+import {allCards, cardImgs, unitPoolInfo} from '../../_utils/helper'
 import { useContract, useContractWrite, useAccount, useWaitForTransaction } from '@starknet-react/core';
 import drawAbi from '../../_utils/abi/drawAbi.json';
 import { contractAddresses } from '../../_utils/helper';
 import { appState } from '../../_utils/state';
 import { snapshot } from 'valtio';
 
-const SetUnit = ({nextOne}) => {
+const SetTokenAmount = ({nextOne}) => {
   const [loading, setLoading] = React.useState(false)
 
   return (
   <div>
-    {unitPoolInfo.map((item, index) => (
-        <UnitPool key={index} id={index} setLoading={setLoading} />
-    ))}
+    <TokenPool setLoading={setLoading}></TokenPool>
     <Button color="default" variant="faded" size='lg' onPress={nextOne} isLoading={loading}>
       Next Step !!
     </Button>
   </div>
   )
 }
-const UnitPool = ({id, setLoading}) => {
-    const [tmpProp, setTmpProp] = React.useState([])
-    const [prop, setProp] = React.useState([])
-    const [tokenIds, setTokenIds] = React.useState([])
-    React.useEffect(() => {
-      setTmpProp(new Array(unitPoolInfo[id].cards.length).fill(0))
-    }, [])
-    React.useEffect(() => {
-      
-      let all_non_zero_idx = [];
-      let non_zero_val = [];
-      for(let i = 0; i < tmpProp.length; i++){
-        let val = Math.round(Number(tmpProp[i]*100));
-        if(tmpProp[i] !== 0){
-          all_non_zero_idx.push(i)
-          non_zero_val.push(val)
-        }
-      }
-      setTokenIds(prev=>all_non_zero_idx)
-      setProp(prev=>non_zero_val)
-    }, [tmpProp])
-    /* React.useEffect(() => {
-      setLoading(isPending)
-      setIsLoading(isPending)
-    }, [isPending]) */
-    const handleSetUnitPool = () => {
-      appState.unitPoolProp[id].token_pool_prop = prop.map((item) => Math.round(item/100))
-      appState.unitPoolProp[id].token_pool = tokenIds
+const TokenPool = ({setLoading}) => {
+    const [amount, setAmount] = React.useState([0,0,0,0,0])
+    const handleTokenAmount = () => {
       writeAsync()
     }
     
@@ -66,8 +39,8 @@ const UnitPool = ({id, setLoading}) => {
 
     const calls = React.useMemo(() => {
       if (!address || !contract) return [];
-      return contract.populateTransaction["set_unit_pool"]!(id, tokenIds, prop);
-    }, [contract, address, tokenIds, prop, id]);
+      return contract.populateTransaction["set_token_max_amount"]!(amount);
+    }, [contract, address, amount]);
 
     const {
       writeAsync,
@@ -90,19 +63,20 @@ const UnitPool = ({id, setLoading}) => {
       retry: true,
       refetchInterval: 1000,
     });
-
     React.useEffect(() => {
       setLoading(isLoading)
     }, [isLoading, setLoading])
   // contract call
+
+  console.log(amount)
   return (
     <div className='border mb-5 p-3'>
     <div className="flex flex-col">
-        <p className="text-md">{unitPoolInfo[id].name}</p>
+        <p className="text-md">TokenId Pool</p>
     </div>
     <Divider className="my-4 bg-white" />
     <div className="gap-3 grid grid-cols-5 sm:grid-cols-5">
-    {unitPoolInfo[id].cards.map((item, index) => (
+    {allCards.map((item, index) => (
         <Card key={index} className="bg-transparent border-none shadow-none">
           <CardBody className="overflow-visible p-0">
             <Image
@@ -116,24 +90,23 @@ const UnitPool = ({id, setLoading}) => {
           <CardFooter className="absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100">
             <Input
             type="url"
-            placeholder="0"
-            endContent={
-                <div className="pointer-events-none flex items-center">
-                  <span className="text-default-400 text-small">%</span>
-                </div>
-              }
-            onChange={(e) => {setTmpProp(tmpProp.map((item, i) => i === index ? Number(e.target.value) : item))}}
+            placeholder="Unlimited"
+            value={amount[index] == 0 ? 'Unlimited' : amount[index]}
+            onChange={(e) => {setAmount(amount.map((item, i) => i === index && i != 'Unlimited' ? Number(e.target.value) : item))}}
             />
+            <Button color="default" className='ml-1' variant="faded" size='sm' onPress={() => setAmount(amount.map((item, i) => i === index ? 0 : item))}>
+              <span className='text-lg text-red-500'>∞</span>
+            </Button>
             </CardFooter>
         </Card>
       ))}
         
       </div>
-      <Button color="default" variant="faded" className='w-1/4 mt-3' size='lg' onPress={handleSetUnitPool} isLoading={isLoading}>
-            {`Set ${unitPoolInfo[id].short}`}
+      <Button color="default" variant="faded" className='w-1/4 mt-3' size='lg' onPress={handleTokenAmount} isLoading={isLoading}>
+            {`Set Token Amount`}
       </Button>
     </div>
   )
 }
 
-export default SetUnit
+export default SetTokenAmount

@@ -7,6 +7,7 @@ const U32MAX: u32 = 4294967295;
 trait IDrawManager<TContractState> {
     fn set_vrf_contract(ref self: TContractState, _vrf_contract: ContractAddress);
     fn set_token_pool(ref self: TContractState, _ids: Span<u256>);
+    fn set_token_max_amount(ref self: TContractState, _max_amount: Span<u32>);
     fn set_unit_pool(ref self: TContractState, _unit_id: u32, _token_ids: Span<u32>, _probs: Span<u32>);
     fn set_drawing_pool(ref self: TContractState, _pool_id: u32, _unit_ids: Span<u32>, _probs: Span<u32>);
     fn send_request(ref self: TContractState, _pools_id: Span<u32>, _draw_amounts: Span<u32>);
@@ -14,6 +15,7 @@ trait IDrawManager<TContractState> {
     // view functions
     fn get_vrf_contract(self: @TContractState) -> ContractAddress;
     fn get_token_pool_info(self: @TContractState) -> Span<u256>;
+    fn get_token_max_amount(self: @TContractState) -> Span<u32>;
     fn get_token_remainings(self: @TContractState) -> Span<u32>;
     fn check_unit_pool_exist(self: @TContractState, unit_id: u32) -> bool;
     fn check_drawing_pool_exist(self: @TContractState, pool_id: u32) -> bool;
@@ -101,6 +103,7 @@ mod DrawManager {
 
         unit_pools_info: LegacyMap::<u32, PoolInfo>,
         unit_pools_info_units: LegacyMap::<(u32, u32), u32>,
+        unit_pools_info_probs: LegacyMap::<(u32, u32), u32>,
         unit_pools_info_accumulated_probs: LegacyMap::<(u32, u32), u32>,
 
         drawing_pools_info: LegacyMap::<u32, PoolInfo>,
@@ -118,7 +121,7 @@ mod DrawManager {
         existed_unit_length: u32,
 
         ids_length: u32,
-
+        token_max_amount: LegacyMap::<u32, u32>,
         remainings: LegacyMap::<u32, u32>,
         ids: LegacyMap::<u32, u256>,
 
@@ -172,7 +175,24 @@ mod DrawManager {
                     break;
                 }
                 self.ids.write(i, *_ids.at(i));
-                self.remainings.write(i, U32MAX);
+                i += 1;
+            }
+        }
+        fn set_token_max_amount(ref self: ContractState, _max_amount: Span<u32>) {
+            //self.access_control.assert_only_role(ADMIN_ROLE);
+            assert(_max_amount.len() == self.ids_length.read(), Errors::LENGTH_NOT_MATCH);
+            let mut i = 0;
+            loop{
+                if (i == _max_amount.len()) {
+                    break;
+                }
+                if(*_max_amount.at(i) == 0){
+                    self.token_max_amount.write(i, U32MAX);
+                    self.remainings.write(i, U32MAX);
+                }else{
+                    self.token_max_amount.write(i, *_max_amount.at(i));
+                    self.remainings.write(i, *_max_amount.at(i));
+                }
                 i += 1;
             }
         }
@@ -193,6 +213,7 @@ mod DrawManager {
                     break;
                 }
                 self.unit_pools_info_units.write((_unit_id, i), *_token_ids.at(i));
+                self.unit_pools_info_probs.write((_unit_id, i), *_probs.at(i));
                 self.unit_pools_info_accumulated_probs.write((_unit_id, i), *tmp_acc.at(i));
                 i += 1;
             };
@@ -300,6 +321,19 @@ mod DrawManager {
                 i += 1;
             };
             remainings.span()
+        }
+        fn get_token_max_amount(self: @ContractState) -> Span<u32> {
+            let mut max_amount = array![];
+            let num = self.ids_length.read();
+            let mut i = 0;
+            loop{
+                if i == num {
+                    break;
+                }
+                max_amount.append(self.token_max_amount.read(i));
+                i += 1;
+            };
+            max_amount.span()
         }
         fn check_unit_pool_exist(self: @ContractState, unit_id: u32) -> bool {
             self.existed_unit.read(unit_id)
@@ -421,7 +455,6 @@ mod DrawManager {
                 consumed_random_word = consumed_random_word_tmp2;
                 random_word_32 = random_word_32_tmp2;
                 id_index = get_token_id(ref self, unit_id, random_word_32);
-                self.remainings.write(id_index, self.remainings.read(id_index) - 1);
                 ids.append(self.ids.read(id_index));
                 
                 
@@ -479,7 +512,38 @@ mod DrawManager {
             }
             i += 1;
         };
-        self.unit_pools_info_units.read((unit_id, i))
+        let id_index = self.unit_pools_info_units.read((unit_id, i));
+        //check whether the token is the last one
+        if(self.remainings.read(id_index) == 1){
+            // adjust the unit_pools_info_units and unit_pools_info_accumulated_probs and unit_pools_info_probs
+            let mut tmp_units = array![];
+            let mut tmp_probs = array![];
+            let mut j = 0;
+            loop{
+                if (j == unit.length) {
+                    break;
+                }
+                if (j != i){
+                    tmp_units.append(self.unit_pools_info_units.read((unit_id, j)));
+                    tmp_probs.append(self.unit_pools_info_probs.read((unit_id, j)));
+                }
+                j += 1;
+            };
+            let tmp_acc = get_accumulated_arr(tmp_probs.span());
+            self.unit_pools_info.write(unit_id, PoolInfo{enable: true, length: unit.length - 1});
+            let mut j = 0;
+            loop{
+                if j == tmp_units.len() {
+                    break;
+                }
+                self.unit_pools_info_units.write((unit_id, j), *tmp_units.at(j));
+                self.unit_pools_info_probs.write((unit_id, j), *tmp_probs.at(j));
+                self.unit_pools_info_accumulated_probs.write((unit_id, j), *tmp_acc.at(j));
+                j += 1;
+            };
+        }
+        self.remainings.write(id_index, self.remainings.read(id_index) - 1);
+        id_index
     }
     fn count_ids(ids: Span<u256>) -> (Span<u256>, Span<u256>) {
         let mut ids_dict: Felt252Dict<u32> = Default::default();

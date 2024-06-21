@@ -5,8 +5,10 @@ import {Breadcrumbs, BreadcrumbItem} from "@nextui-org/react";
 import SetUnit from './_components/SetUnit';
 import SetDraw from './_components/SetDraw';
 import Result from './_components/Result';
+import SetTokenAmount from './_components/SetTokenAmount';
 import { useRouter } from 'next/navigation'
 import { useAccount } from '@starknet-react/core';
+
 
 
 const Home = () => {
@@ -20,7 +22,7 @@ const Home = () => {
   }, [])
   const nextOne = () => {
     setCurState(curState + 1);
-    if (curState === 2){
+    if (curState === 3){
       rounter.push('/')
     }
     window.scrollTo({
@@ -29,17 +31,20 @@ const Home = () => {
     })
   }
   return (
-    <div className='items-center w-full'>
+    <div className='items-center w-[90%]'>
       <Breadcrumbs size='lg' color='foreground' variant="solid" separator='' className='pb-3 w-full'>
-        <BreadcrumbItem isCurrent={curState === 0}  className='mx-3'>Set Unit Pool</BreadcrumbItem>
+        <BreadcrumbItem isCurrent={curState === 0}  className='mx-3'>Set Token Pool</BreadcrumbItem>
         <BreadcrumbItem className='mx-3'>{'>>>'}</BreadcrumbItem>
-        <BreadcrumbItem isCurrent={curState === 1} className='mx-3'>Set Drawing Pool</BreadcrumbItem>
+        <BreadcrumbItem isCurrent={curState === 1}  className='mx-3'>Set Unit Pool</BreadcrumbItem>
         <BreadcrumbItem className='mx-3'>{'>>>'}</BreadcrumbItem>
-        <BreadcrumbItem isCurrent={curState === 2} className='mx-3'>Results</BreadcrumbItem>
+        <BreadcrumbItem isCurrent={curState === 2} className='mx-3'>Set Drawing Pool</BreadcrumbItem>
+        <BreadcrumbItem className='mx-3'>{'>>>'}</BreadcrumbItem>
+        <BreadcrumbItem isCurrent={curState === 3} className='mx-3'>Results</BreadcrumbItem>
       </Breadcrumbs>
-      {curState === 0 && <SetUnit nextOne={nextOne}/>}
-      {curState === 1 && <SetDraw nextOne={nextOne}/>}
-      {curState === 2 && <Result nextOne={nextOne}/>}
+      {curState === 0 && <SetTokenAmount nextOne={nextOne} />}
+      {curState === 1 && <SetUnit nextOne={nextOne} />}
+      {curState === 2 && <SetDraw nextOne={nextOne} />}
+      {curState === 3 && <Result nextOne={nextOne} />}
     </div>
   )
 }
