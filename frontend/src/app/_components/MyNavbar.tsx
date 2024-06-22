@@ -132,7 +132,7 @@ function ConnectModel({ isOpen, onOpenChange}) {
               {connectors.map((connector) => (
                 <li key={connector.id}>
                   
-                  <Button color="default" variant="faded" onPress={() => {handleConnect(connector)}} className="w-full">
+                  <Button color="default" variant="faded" onPress={() => {handleConnect(connector)}} className="w-full my-2">
                     {connector.name.charAt(0).toUpperCase() + connector.name.slice(1)}
                   </Button>
                 </li>

@@ -31,12 +31,12 @@ const Home = () => {
         className="z-0 w-full h-full object-cover"
         src={buy_card_banner.src}
       />
-      <CardFooter className="absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100">
-        <div className="flex flex-grow gap-20 items-center justify-end pr-10">
-        <Button color="default" variant="faded" className='w-1/4' onPress={()=>model1.onOpen()}>
+      <CardFooter className="absolute bg-transparent bottom-[40%] z-10 ">
+        <div className="flex flex-grow gap-10 items-center justify-end pr-10">
+        <Button color="default" variant="faded" className='w-1/5' onPress={()=>model1.onOpen()}>
             Draw from Normal Pool
         </Button>
-        <Button color="default" variant="faded" className='w-1/4' onPress={()=>model2.onOpen()}>
+        <Button color="default" variant="faded" className='w-1/5' onPress={()=>model2.onOpen()}>
             Draw from Special Pool
           </Button>
           

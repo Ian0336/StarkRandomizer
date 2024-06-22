@@ -88,7 +88,7 @@ const TokenPool = ({setLoading, setSetNumber}) => {
               radius="lg"
               width="100%"
               alt={`Card ${item}`}
-              className="w-full object-cover h-[500px]"
+              className="w-full object-cover"
               src={cardImgs[item].src}
             />
           </CardBody>
