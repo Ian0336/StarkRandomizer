@@ -36,10 +36,10 @@ const Home = () => {
           <div className="flex flex-col gap-6 w-[50%] items-center">
           </div>
           <div className="flex flex-col gap-10 w-[50%] items-center">
-          <Button color="default" variant="faded" className='w-3/4 text-3xl' /* size="lg" */ onPress={()=>model1.onOpen()}>
+          <Button color="default" variant="faded" className='w-3/4 text-2xl' /* size="lg" */ onPress={()=>model1.onOpen()}>
               Draw from Normal Pool
           </Button>
-          <Button color="default" variant="faded" className='w-3/4 text-3xl' /* size="lg" */ onPress={()=>model2.onOpen()}>
+          <Button color="default" variant="faded" className='w-3/4 text-2xl' /* size="lg" */ onPress={()=>model2.onOpen()}>
               Draw from Special Pool
             </Button>
           </div>
