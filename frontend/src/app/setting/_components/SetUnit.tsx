@@ -12,22 +12,24 @@ import { snapshot } from 'valtio';
 
 const SetUnit = ({nextOne}) => {
   const [loading, setLoading] = React.useState(false)
+  const [setNumber, setSetNumber] = React.useState(0)
 
   return (
   <div>
     {unitPoolInfo.map((item, index) => (
-        <UnitPool key={index} id={index} setLoading={setLoading} />
+        <UnitPool key={index} id={index} setLoading={setLoading} setSetNumber={setSetNumber}/>
     ))}
-    <Button color="default" variant="faded" size='lg' onPress={nextOne} isLoading={loading}>
+    <Button color="default" variant="faded" size='lg' onPress={nextOne} isLoading={loading} isDisabled={setNumber!=3}>
     NEXT
     </Button>
   </div>
   )
 }
-const UnitPool = ({id, setLoading}) => {
+const UnitPool = ({id, setLoading, setSetNumber}) => {
     const [tmpProp, setTmpProp] = React.useState([])
     const [prop, setProp] = React.useState([])
     const [tokenIds, setTokenIds] = React.useState([])
+    const [setted, setSetted] = React.useState(false)
     React.useEffect(() => {
       setTmpProp(new Array(unitPoolInfo[id].cards.length).fill(0))
     }, [])
@@ -50,7 +52,13 @@ const UnitPool = ({id, setLoading}) => {
       setIsLoading(isPending)
     }, [isPending]) */
     const handleSetUnitPool = () => {
-      appState.unitPoolProp[id].token_pool_prop = prop.map((item) => Math.round(item/100))
+      // check if the sum of prop is 10000
+      let sum = prop.reduce((a, b) => a + b, 0)
+      if(sum !== 10000){
+        alert("The sum of the probability should be 100")
+        return
+      }
+      appState.unitPoolProp[id].token_pool_prop = prop.map((item) => (item/100).toFixed(2))
       appState.unitPoolProp[id].token_pool = tokenIds
       writeAsync()
     }
@@ -94,6 +102,13 @@ const UnitPool = ({id, setLoading}) => {
     React.useEffect(() => {
       setLoading(isLoading)
     }, [isLoading, setLoading])
+    React.useEffect(() => {
+      if(setted) return
+      if(receipt){
+        setSetNumber(prev=>prev+1)
+        setSetted(true)
+      }
+    }, [receipt])
   // contract call
   return (
     <div className='border mb-5 p-3'>

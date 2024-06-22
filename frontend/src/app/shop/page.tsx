@@ -23,7 +23,7 @@ const Home = () => {
   const model2 = useDisclosure();
   return (
     <>
-    <Card className="col-span-12 sm:col-span-4 h-[500px] bg-transparent border-none">
+    <Card className="col-span-12 sm:col-span-4 w-[90%] bg-transparent border-none max-w-[1280px]">
       
       <Image
         removeWrapper
@@ -184,17 +184,17 @@ function GetModel({ isOpen, onOpenChange,idx}) {
             curState === 1 ? "Submitting..." :
             curState === 2 ? "Loading..." :
             curState === 3 ? "Waiting for VRF…" :
-            curState === 4 ? "Open your packs" : ""
+            curState === 4 ? "Open your Pack" : ""
             }</ModalHeader>
           <ModalBody >
-            {curState >= 3?(<div>Request Transaction Hash: <Link onPress={() => window.open(`https://sepolia.starkscan.co/tx/${receipt.transaction_hash}`, '_blank').focus()}>{receipt.transaction_hash}</Link></div>) : ""}
+            {curState >= 3?(<div>Request Transaction Hash (to Pragma VRF): <Link onPress={() => window.open(`https://sepolia.starkscan.co/tx/${receipt.transaction_hash}`, '_blank').focus()}>{receipt.transaction_hash}</Link></div>) : ""}
             {curState === 4 ?(<div>VRF Transaction Hash: <Link onPress={() => window.open(`https://sepolia.starkscan.co/tx/${myEvent.transaction_hash}`, '_blank').focus()}>{myEvent.transaction_hash}</Link></div>) : ""}
           </ModalBody>
           <ModalFooter>
             <Button color="default" variant="faded" className='w-1/4' isLoading={curState!==0&&curState!==4} onPress={handleBtnPress}>
               {
                 curState === 0 ? `DRAW`:
-                curState === 4 ? "Open Packs" : "Drawing Cards"
+                curState === 4 ? "OPEN!" : "Drawing Cards"
               }
             </Button>
           </ModalFooter>

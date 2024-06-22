@@ -12,21 +12,24 @@ import { snapshot } from 'valtio';
 
 const SetDraw = ({nextOne}) => {
   const [loading, setLoading] = React.useState(false)
+  const [setNumber, setSetNumber] = React.useState(0)
+
   return (
   <div>
     {drawPoolInfo.map((item, index) => (
-        <DrawPool key={index} id={index} setLoading={setLoading}/>
+        <DrawPool key={index} id={index} setLoading={setLoading} setSetNumber={setSetNumber}/>
     ))}
-    <Button color="default" variant="faded" size='lg' onPress={nextOne} isLoading={loading}>
+    <Button color="default" variant="faded" size='lg' onPress={nextOne} isLoading={loading} isDisabled={setNumber!=2}>
       NEXT 
     </Button>
   </div>
   )
 }
-const DrawPool = ({id, setLoading}) => {
+const DrawPool = ({id, setLoading, setSetNumber}) => {
   const [tmpProp, setTmpProp] = React.useState([])
   const [prop, setProp] = React.useState([])
   const [tokenIds, setTokenIds] = React.useState([])
+  const [setted, setSetted] = React.useState(false)
   React.useEffect(() => {
     setTmpProp(new Array(drawPoolInfo[id].unit_pool.length).fill(0))
   }, [])
@@ -48,7 +51,12 @@ const DrawPool = ({id, setLoading}) => {
     setIsLoading(isPending)
   }, [isPending]) */
   const handleSetDrawingPool = () => {
-    appState.drawingPoolProps[id].unit_pool_prop = prop.map((item) => Math.round(item/100))
+    let sum = prop.reduce((a, b) => a + b, 0)
+    if(sum !== 10000){
+      alert("The sum of the probability should be 100")
+      return
+    }
+    appState.drawingPoolProps[id].unit_pool_prop = prop.map((item) => (item/100).toFixed(2))
     appState.drawingPoolProps[id].unit_pool = tokenIds
     writeAsync()
   }
@@ -92,6 +100,13 @@ const DrawPool = ({id, setLoading}) => {
   React.useEffect(() => {
     setLoading(isLoading)
   }, [isLoading, setLoading])
+  React.useEffect(() => {
+    if(setted) return
+    if(receipt){
+      setSetNumber(prev=>prev+1)
+      setSetted(true)
+    }
+  }, [receipt])
 // contract call
 
   return (

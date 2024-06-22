@@ -12,17 +12,18 @@ import { snapshot } from 'valtio';
 
 const SetTokenAmount = ({nextOne}) => {
   const [loading, setLoading] = React.useState(false)
+  const [setNumber, setSetNumber] = React.useState(0)
 
   return (
   <div>
-    <TokenPool setLoading={setLoading}></TokenPool>
-    <Button color="default" variant="faded" size='lg' onPress={nextOne} isLoading={loading}>
+    <TokenPool setLoading={setLoading} setSetNumber={setSetNumber}></TokenPool>
+    <Button color="default" variant="faded" size='lg' onPress={nextOne} isLoading={loading} isDisabled={setNumber!=1}>
         NEXT
     </Button>
   </div>
   )
 }
-const TokenPool = ({setLoading}) => {
+const TokenPool = ({setLoading, setSetNumber}) => {
     const [amount, setAmount] = React.useState([0,0,0,0,0])
     const handleTokenAmount = () => {
       writeAsync()
@@ -66,12 +67,17 @@ const TokenPool = ({setLoading}) => {
     React.useEffect(() => {
       setLoading(isLoading)
     }, [isLoading, setLoading])
+    React.useEffect(() => {
+      if(receipt){
+        setSetNumber(prev=>prev+1)
+      }
+    }, [receipt])
   // contract call
 
   return (
     <div className='border mb-5 p-3'>
     <div className="flex flex-col">
-        <p className="text-md">TokenId Pool</p>
+        <p className="text-md">TokenID Pool</p>
     </div>
     <Divider className="my-4 bg-white" />
     <div className="gap-3 grid grid-cols-5 sm:grid-cols-5">
@@ -91,7 +97,7 @@ const TokenPool = ({setLoading}) => {
             type="url"
             placeholder="Unlimited"
             value={amount[index] == 0 ? 'Unlimited' : amount[index]}
-            onChange={(e) => {setAmount(amount.map((item, i) => i === index && i != 'Unlimited' ? Number(e.target.value) : item))}}
+            onChange={(e) => {setAmount(amount.map((item, i) => i === index  && !isNaN(Number(e.target.value)) ? Number(e.target.value) : item))}}
             />
             <Button color="default" className='ml-1' variant="faded" size='sm' onPress={() => setAmount(amount.map((item, i) => i === index ? 0 : item))}>
               <span className='text-lg text-red-500'>∞</span>
@@ -102,7 +108,7 @@ const TokenPool = ({setLoading}) => {
         
       </div>
       <Button color="default" variant="faded" className='w-1/4 mt-3' size='lg' onPress={handleTokenAmount} isLoading={isLoading}>
-            {`Set Token Amount`}
+        Set Token Availability
       </Button>
     </div>
   )

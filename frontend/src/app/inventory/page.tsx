@@ -38,7 +38,7 @@ const Home = () => {
   return (
     <>
     {loading && address!=null ? <Spinner /> :<></>}
-      <div className="gap-10 grid grid-cols-2 sm:grid-cols-5">
+      <div className="gap-10 grid grid-cols-2 sm:grid-cols-5 w-[90%] max-w-[1280px]">
         {cardImgs[0] !== undefined ? nftIdList.map((item, index) => (
           <Card key={index} className="bg-transparent border-none shadow-none">
             <CardBody className="overflow-visible p-0">

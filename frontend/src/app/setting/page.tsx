@@ -31,7 +31,7 @@ const Home = () => {
     })
   }
   return (
-    <div className='items-center w-[90%]'>
+    <div className='items-center w-[90%] max-w-[1280px]'>
       <Breadcrumbs size='lg' color='foreground' variant="solid" separator='' className='pb-3 w-full'>
         <BreadcrumbItem isCurrent={curState === 0}  className='mx-3'>Set Token Pool</BreadcrumbItem>
         <BreadcrumbItem className='mx-3'>{'>>>'}</BreadcrumbItem>
