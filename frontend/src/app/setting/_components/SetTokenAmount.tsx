@@ -24,13 +24,17 @@ const SetTokenAmount = ({nextOne}) => {
   )
 }
 const TokenPool = ({setLoading, setSetNumber}) => {
-    const [amount, setAmount] = React.useState([0,0,0,0,0])
-    const handleTokenAmount = () => {
+  const [amount, setAmount] = React.useState([0,0,0,0,0])
+  const { address} = useAccount();
+    const handleTokenAmount = async() => {
+      if(address == null){
+        alert('Please connect wallet first');
+        return
+      }
       writeAsync()
     }
     
     // contract call
-    const { address} = useAccount();
     
 
     const { contract } = useContract({

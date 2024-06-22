@@ -9,7 +9,7 @@ export default function Home() {
   const { connect, connectors } = useConnect();
   const router = useRouter();
   useEffect(() => {
-    router.push('/shop', { scroll: true })
+    router.push('/setting', { scroll: true })
     }
   );
  

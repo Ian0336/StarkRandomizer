@@ -33,6 +33,10 @@ export default function MyNavbar() {
     if(address==null) return;
     router.push('/inventory');
   }
+  const handleToShop = () => {
+    if(address==null) return;
+    router.push('/shop');
+  }
 
   const handleConnect = () => {
     if(address) {
@@ -49,9 +53,19 @@ export default function MyNavbar() {
       </NavbarBrand>
       <NavbarContent className="hidden sm:flex gap-20" justify="center">
         <NavbarItem isActive = {curPage === "/shop"}>
-          <Link className="text-white" onPress={() => router.push('/shop')} href="#">
+          
+          <Popover placement='up'>
+          <PopoverTrigger>
+          <Link className="text-white" onPress={handleToShop} href="#">
           DRAW CARDS
           </Link>
+          </PopoverTrigger>
+          {address==null?(<PopoverContent className='text-black'>
+            <div className="px-1 py-2">
+              <div className="text-small font-bold text-red-400">Please connect your wallet</div>
+            </div>
+          </PopoverContent>):(<></>)}
+        </Popover>
         </NavbarItem>
         <NavbarItem isActive = {curPage === "/inventory"}>
           <Popover placement='up'>
