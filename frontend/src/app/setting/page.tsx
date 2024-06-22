@@ -23,7 +23,7 @@ const Home = () => {
   const nextOne = () => {
     setCurState(curState + 1);
     if (curState === 3){
-      rounter.push('/')
+      rounter.push('/shop')
     }
     window.scrollTo({
       top: 0,
