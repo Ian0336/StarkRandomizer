@@ -31,14 +31,18 @@ const Home = () => {
         className="z-0 w-full h-full object-cover"
         src={buy_card_banner.src}
       />
-      <CardFooter className="absolute bg-transparent bottom-[40%] z-10 ">
+      <CardFooter className="absolute bg-transparent bottom-[35%] z-10 ">
         <div className="flex flex-grow gap-10 items-center justify-end pr-10">
-        <Button color="default" variant="faded" className='w-1/5' onPress={()=>model1.onOpen()}>
-            Draw from Normal Pool
-        </Button>
-        <Button color="default" variant="faded" className='w-1/5' onPress={()=>model2.onOpen()}>
-            Draw from Special Pool
+          <div className="flex flex-col gap-6 w-[50%] items-center">
+          </div>
+          <div className="flex flex-col gap-10 w-[50%] items-center">
+          <Button color="default" variant="faded" className='w-3/4 text-3xl' /* size="lg" */ onPress={()=>model1.onOpen()}>
+              Draw from Normal Pool
           </Button>
+          <Button color="default" variant="faded" className='w-3/4 text-3xl' /* size="lg" */ onPress={()=>model2.onOpen()}>
+              Draw from Special Pool
+            </Button>
+          </div>
           
           
         </div>
