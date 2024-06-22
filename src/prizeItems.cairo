@@ -117,8 +117,8 @@ use openzeppelin::token::erc1155::interface::ERC1155ABI;
         ref self: ContractState, 
         minter: ContractAddress, 
         owner: ContractAddress,
-        base_uri: ByteArray,
     ) {
+        let base_uri: ByteArray = "ipfs.io/ipfs/QmQajLsvUqScLf4VV3XgHmZRquD6sPTVVZ3Xty66NQHDma/";
         assert(!owner.is_zero(), 'owner is 0');
         self.erc1155.initializer(base_uri);
         self.access_control.initializer();
