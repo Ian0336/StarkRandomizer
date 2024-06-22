@@ -26,7 +26,6 @@ const useFetchUnitPoolProp = (ids) => {
       console.log(error?.message);
     else{
       if(data !== undefined){
-        console.log(data);
         tmp = data[0].map((item, index) => Number(item));
         // data[2] is accumulated prop, turn it into prop and make them add up to 100
         tmp2 = [];

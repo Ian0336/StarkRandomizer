@@ -20,7 +20,7 @@ const useFetchNFT = (ids) => {
       if(address === undefined) return;
       refetch();
     }, [address]);
-    if (isError || !data) 
+    if (isError) 
       console.log(error?.message);
     return {value: Number(data), isLoading:isLoading };
 }

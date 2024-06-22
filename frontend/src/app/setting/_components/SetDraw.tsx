@@ -34,6 +34,10 @@ const DrawPool = ({id, setLoading, setSetNumber}) => {
     setTmpProp(new Array(drawPoolInfo[id].unit_pool.length).fill(0))
   }, [])
   React.useEffect(() => {
+    let check = tmpProp.map((item) => isNaN(item))
+    if(check.includes(true)){
+      return
+    }
     let all_non_zero_idx = [];
     let non_zero_val = [];
     for(let i = 0; i < tmpProp.length; i++){

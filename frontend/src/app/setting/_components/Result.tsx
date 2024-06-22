@@ -39,8 +39,8 @@ const Result = ({nextOne}) => {
               <AccordionItem key={i} aria-label={unitPoolInfo[unit].name} subtitle={`${item.unit_pool_prop[i]}%`} title={unitPoolInfo[unit].name}>
                   <Accordion className='text-white' key={i}>
                   {unitPoolProp[unit].token_pool?.map((card, j) => (
-                      <AccordionItem key={j} aria-label={`ID-00${card}`} title={`ID-00${card}`} subtitle={`${unitPoolProp[unit].token_pool_prop[j]}%`}>
-                        <Image src={cardImgs[card].src} alt={`ID-00${card}`} width={100} height={100} />
+                      <AccordionItem key={j} aria-label={`ID-00${card+1}`} title={`ID-00${card+1}`} subtitle={`${unitPoolProp[unit].token_pool_prop[j]}%`}>
+                        <Image src={cardImgs[card+1].src} alt={`ID-00${card+1}`} width={100} height={100} />
                       </AccordionItem>
                   ))}
                 </Accordion>

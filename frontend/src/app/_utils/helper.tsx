@@ -13,7 +13,7 @@ export const contractAddresses = {
 };
 export const unitPoolInfo = [
     {
-        name: "Unit Pool A : Commons",
+        name: "Unit Pool A : Rares",
         short:"Unit Pool A",
         cards: [1,2,3,4,5]
     },
@@ -23,7 +23,7 @@ export const unitPoolInfo = [
         cards: [1,2,3,4,5]
     },
     {
-        name: "Unit Pool C : Rares",
+        name: "Unit Pool C : Commons",
         short:"Unit Pool C",
         cards: [1,2,3,4,5]
     }

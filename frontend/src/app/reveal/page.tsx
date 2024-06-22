@@ -39,7 +39,7 @@ const Home = () => {
         )):<></>}
       </div>
       <Button color="default" variant="faded" className='w-1/4 mt-5' onPress={()=>{router.push('/shop')}}>
-        Collected !
+        DRAW MORE
       </Button>
     </>
   )

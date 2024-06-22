@@ -148,7 +148,6 @@ function GetModel({ isOpen, onOpenChange,idx}) {
   const fetchVRF = async () => {
     if(curState !== 3) return;
     const lastBlock = await provider.getBlock('latest');
-    console.log('requestId:', requestId)
     const keyFilter = [num.toHex(hash.starknetKeccak('RequestCompleted')), num.toHex(requestId.low), num.toHex(requestId.high)];
     let eventsListObj = await provider.getEvents({
       address: contractAddresses.draw_contract,
@@ -198,7 +197,7 @@ function GetModel({ isOpen, onOpenChange,idx}) {
             <Button color="default" variant="faded" className='w-1/4' isLoading={curState!==0&&curState!==4} onPress={handleBtnPress}>
               {
                 curState === 0 ? `DRAW`:
-                curState === 4 ? "OPEN!" : "Drawing Cards"
+                curState === 4 ? "SEE CARDS" : "Drawing Cards"
               }
             </Button>
           </ModalFooter>
