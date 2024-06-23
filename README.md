@@ -1,9 +1,9 @@
 # Project Description
 Blockchain applications like games and lotteries need random prize distributions but face challenges in maintaining consistent draw rates. For StarkHack, our team developed a smart contract module with a multi-layer structure that enhances NFT design flexibility and resolves the issue where draw rates are dependent on the NFT supply count.
 ### Smart Contract Stucture
-![image](https://hackmd.io/_uploads/BJi7kZNLR.png)
+![image](https://hackmd.io/_uploads/SyeQoUrIC.png)
 ### Draw Contract Design
-![image](https://hackmd.io/_uploads/S1RSl-ELC.png)
+![image](https://hackmd.io/_uploads/BJJViLHLA.png)
 - **TokenID Pool**: This pool contains all possible prizes (NFTs) and is designed for ERC-1155 lotteries that support batch-drawing through the ERC-1155 mintBatch function. It lacks associated rates, allowing it to be replenished without altering existing draw rates. Blockchain developers can set and modify the supply count for each TokenID (prize) independently. The maximum values for supply count and type are 2^32 - 1 and 2^256 - 1, respectively.
 
 - **Unit Pools**: Each Unit Pool contains a set of draw rates for the corresponding TokenIDs from the TokenID Pool. Multiple Unit Pools can be configured with desired probabilities for the given TokenIDs, providing flexibility in use case design.
@@ -21,7 +21,7 @@ When the supply count of a TokenID is reached, its own probability will be set t
 | VRF Manager Contract             | [0x051d6475f06b8031c8cb6eb075f011ae884a706d3993e002863e64b995312c93](https://sepolia.starkscan.co/contract/0x051d6475f06b8031c8cb6eb075f011ae884a706d3993e002863e64b995312c93#overview) |Communicates with the Pragma VRF Contract. |
 | Pragma VRF Contract     | [0x060c69136b39319547a4df303b6b3a26fab8b2d78de90b6bd215ce82e9cb515c](https://sepolia.starkscan.co/contract/0x060c69136b39319547a4df303b6b3a26fab8b2d78de90b6bd215ce82e9cb515c#overview)     | A VRF Contract provided by Pragma that generates trusted random numbers.     |
 
-### FRONTEND
+### Frontend
 
 - Built with the Next.js framework.
 - Interacts with the contracts using the starknet-react library.
