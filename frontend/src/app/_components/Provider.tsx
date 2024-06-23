@@ -7,7 +7,8 @@ import {
   argent,
   braavos,
   useInjectedConnectors,
-  voyager
+  voyager,
+  jsonRpcProvider
 } from "@starknet-react/core";
  
 // Import the CSS for the connectors.
@@ -23,11 +24,17 @@ export function Providers({ children }: { children: React.ReactNode }) {
     // Randomize the order of the connectors.
     order: "alphabetical"
   });
+  function rpc() {
+    return {
+      nodeUrl: `https://rpc.nethermind.io/sepolia-juno/?apikey=O16LI7AkAJKh2AO296RpdudVQNyOGoBUFgTng4xJWvV5NjgT`
+    }
+  }
+
 
   return (
     <StarknetConfig
       chains={[sepolia]}
-      provider={publicProvider()}
+      provider={jsonRpcProvider({ rpc })}
       connectors={connectors}
       explorer={voyager}
     >

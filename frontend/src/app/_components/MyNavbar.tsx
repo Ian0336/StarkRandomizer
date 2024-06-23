@@ -136,17 +136,18 @@ function ConnectModel({ isOpen, onOpenChange}) {
     }
   }, [address, chainId])
   return (
-    <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+    <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="lg">
     <ModalContent className="text-black">
       {(onClose) => (
         <>
           <ModalHeader className="flex flex-col gap-1">Connect your wallet</ModalHeader>
           <ModalBody >
+            <div className="text-black w-full items-center">Only Braavos wallet is supported. Argent X coming soon.</div>
             <ul>
-              {connectors.map((connector) => (
+              {connectors.toReversed().map((connector) => (
                 <li key={connector.id}>
                   
-                  <Button color="default" variant="faded" onPress={() => {handleConnect(connector)}} className="w-full my-2">
+                  <Button color="default" variant="faded" onPress={() => {handleConnect(connector)}} className="w-full my-2" isDisabled={connector.id !== "braavos"}>
                     {connector.name.charAt(0).toUpperCase() + connector.name.slice(1)}
                   </Button>
                 </li>
