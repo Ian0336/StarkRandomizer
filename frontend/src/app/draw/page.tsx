@@ -140,7 +140,7 @@ function GetModel({ isOpen, onOpenChange,idx}) {
   React.useEffect(() => {
       const id = setInterval(() => {
         fetchVRF()
-      }, 3000);
+      }, 10000);
     return () => {
         clearInterval(id);
     }
