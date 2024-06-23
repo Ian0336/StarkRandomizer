@@ -23,6 +23,6 @@ When the supply count of a TokenID is reached, its own probability will be set t
 
 ### FRONTEND
 
-- BBuilt with the Next.js framework.
-- BInteracts with the contracts using the starknet-react library.
-- BDeployed with Vercel.
+- Built with the Next.js framework.
+- Interacts with the contracts using the starknet-react library.
+- Deployed with Vercel.
