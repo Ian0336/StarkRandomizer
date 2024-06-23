@@ -38,7 +38,7 @@ const Home = () => {
           </Card>
         )):<></>}
       </div>
-      <Button color="default" variant="faded" className='w-1/4 mt-5' onPress={()=>{router.push('/shop')}}>
+      <Button color="default" variant="faded" className='w-1/4 mt-5' onPress={()=>{router.push('/draw')}}>
         DRAW MORE
       </Button>
     </>

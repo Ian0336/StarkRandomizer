@@ -17,13 +17,13 @@ const Home = () => {
   const [curState, setCurState] = React.useState(0)
   React.useEffect(() => {
     if(address === null){
-      rounter.push('/shop')
+      rounter.push('/draw')
     }
   }, [])
   const nextOne = () => {
     setCurState(curState + 1);
     if (curState === 3){
-      rounter.push('/shop')
+      rounter.push('/draw')
     }
     window.scrollTo({
       top: 0,

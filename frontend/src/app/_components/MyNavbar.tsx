@@ -35,7 +35,7 @@ export default function MyNavbar() {
   }
   const handleToShop = () => {
     if(address==null) return;
-    router.push('/shop');
+    router.push('/draw');
   }
 
   const handleConnect = () => {
@@ -52,7 +52,7 @@ export default function MyNavbar() {
         <Image src={myLogo} alt="Seekers Alliance" width={300} height={300} className=""/>
       </NavbarBrand>
       <NavbarContent className="hidden sm:flex gap-20" justify="center">
-        <NavbarItem isActive = {curPage === "/shop"}>
+        <NavbarItem isActive = {curPage === "/draw"}>
           
           <Popover placement='up'>
           <PopoverTrigger>
